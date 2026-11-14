@@ -6,8 +6,8 @@
     "language": "python3",
     "executableName": "main.py",
     "installScript": "install.sh",
-    "documentationLink": "https://github.com/mike-2545/eisy-google-calendar/blob/main/README.md",
-    "licenseLink": "https://github.com/mike-2545/eisy-google-calendar/blob/main/LICENSE",
+    "documentationLink": "https://calendarrules.org/",
+    "licenseLink": "https://github.com/mike-2545/CalendarRules/blob/main/LICENSE",
     "shortPoll": 60,
     "longPoll": 900,
     "profileVersion": "3.0.0",
@@ -18,7 +18,7 @@
     "worksOnEisy": true,
     "requiresIoXAccess": true,
     "requirements": [],
-    "version": "0.4.10"
+    "version": "0.4.11"
   },
   "editors": [],
   "nodedefs": [
@@ -27,10 +27,19 @@
       "name": "CalendarRules",
       "icon": "Weather",
       "properties": [
-        {"id": "ST", "editor": "bool", "name": "Online"}
+        {
+          "id": "ST",
+          "editor": "bool",
+          "name": "Online"
+        }
       ],
       "commands": {
-        "accepts": [{"id": "REFRESH", "name": "Refresh Now"}],
+        "accepts": [
+          {
+            "id": "REFRESH",
+            "name": "Refresh Now"
+          }
+        ],
         "sends": []
       }
     }
