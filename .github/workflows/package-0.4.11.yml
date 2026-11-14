@@ -1,0 +1,68 @@
+name: Package CalendarRules 0.4.11 from approved merge
+on:
+  push:
+    paths:
+      - .github/workflows/package-0.4.11.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout immutable approved source
+        uses: actions/checkout@v4
+        with:
+          ref: 076e146303ab5344797d3154174945bfa345c2b3
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify selected commit
+        run: |
+          test "$(git rev-parse HEAD)" = "076e146303ab5344797d3154174945bfa345c2b3"
+          git status --porcelain
+      - name: Build deterministic packages twice
+        run: |
+          python scripts/build_store_package.py --output-dir "$RUNNER_TEMP/a" --require-clean
+          python scripts/build_store_package.py --output-dir "$RUNNER_TEMP/b" --require-clean
+          cmp "$RUNNER_TEMP/a/CalendarRules-0.4.11.zip" "$RUNNER_TEMP/b/CalendarRules-0.4.11.zip"
+          cmp "$RUNNER_TEMP/a/CalendarRules-0.4.11.manifest.sha256" "$RUNNER_TEMP/b/CalendarRules-0.4.11.manifest.sha256"
+          python - "$RUNNER_TEMP/a/CalendarRules-0.4.11.zip" <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import sys
+          import zipfile
+          archive=pathlib.Path(sys.argv[1])
+          with zipfile.ZipFile(archive) as z:
+              bad=z.testzip()
+              assert bad is None, f"ZIP integrity failed: {bad}"
+              paths=z.namelist()
+              assert paths == sorted(paths)
+              assert all(not p.startswith('plugin/') for p in paths)
+              manifest=z.read('PACKAGE_MANIFEST.sha256').decode()
+              for line in manifest.splitlines():
+                  digest, name = line.split('  ', 1)
+                  assert hashlib.sha256(z.read(name)).hexdigest() == digest, name
+              metadata=json.loads(z.read('eisy_google_calendar.iox_plugin.json'))
+              assert metadata['plugin']['version']=='0.4.11'
+              assert b'polyglot.start({"version": "0.4.11", "requestId": False})' in z.read('main.py')
+              print(f"Verified {len(paths)} archive entries and manifest checksums.")
+          print('ZIP_SHA256='+hashlib.sha256(archive.read_bytes()).hexdigest())
+          PY
+          mkdir -p dist
+          cp "$RUNNER_TEMP/a/CalendarRules-0.4.11.zip" dist/
+          cp "$RUNNER_TEMP/a/CalendarRules-0.4.11.manifest.sha256" dist/
+          sha256sum dist/* > dist/SHA256SUMS.txt
+          cat dist/SHA256SUMS.txt
+      - name: Upload reviewed release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: CalendarRules-0.4.11-approved-merge-candidate
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 90
