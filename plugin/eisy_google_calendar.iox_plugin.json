@@ -27,19 +27,10 @@
       "name": "CalendarRules",
       "icon": "Weather",
       "properties": [
-        {
-          "id": "ST",
-          "editor": "bool",
-          "name": "Online"
-        }
+        {"id": "ST", "editor": "bool", "name": "Online"}
       ],
       "commands": {
-        "accepts": [
-          {
-            "id": "REFRESH",
-            "name": "Refresh Now"
-          }
-        ],
+        "accepts": [{"id": "REFRESH", "name": "Refresh Now"}],
         "sends": []
       }
     }
