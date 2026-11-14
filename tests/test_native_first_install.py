@@ -67,7 +67,7 @@ def test_fresh_store_home_has_no_supervised_activation_or_private_state(
     metadata = json.loads(
         (home / "eisy_google_calendar.iox_plugin.json").read_text(encoding="utf-8")
     )
-    assert metadata["plugin"]["version"] == "0.4.10"
+    assert metadata["plugin"]["version"] == "0.4.11"
     assert metadata["plugin"]["installScript"] == "install.sh"
     assert metadata["plugin"]["executableName"] == "main.py"
     assert metadata["plugin"]["enableOAUTH2"] is True
@@ -145,7 +145,7 @@ launcher.main()
 
 assert events == [
     "controller",
-    ("start", {"version": "0.4.10", "requestId": False}),
+    ("start", {"version": "0.4.11", "requestId": False}),
     "ready",
     "updateProfile",
     "register_node",
@@ -295,7 +295,7 @@ launcher.main()
 assert events == [
     "OAuth constructed",
     "Google and enabled-rule IoX controller",
-    ("start", {"version": "0.4.10", "requestId": False}),
+    ("start", {"version": "0.4.11", "requestId": False}),
     "ready", "updateProfile", "register_node", "runForever",
 ]
 assert not (home / ".iox-state-writes-enabled").exists()
