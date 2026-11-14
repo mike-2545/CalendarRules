@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="CalendarRules privacy policy: Google Calendar data access, local storage, use, sharing, and deletion.">
+<title>Privacy Policy — CalendarRules</title>
+<link rel="canonical" href="https://calendarrules.org/privacy/">
+<link rel="stylesheet" href="/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap"><a class="brand" href="/">CalendarRules</a><nav aria-label="Primary navigation"><a href="/">Home</a><a href="https://github.com/mike-2545/CalendarRules">Source</a><a href="https://github.com/mike-2545/CalendarRules/issues">Support</a></nav></div></header>
+<main class="wrap prose" id="main">
+<h1>CalendarRules Privacy Policy</h1>
+<p class="updated"><strong>Effective:</strong> November 14, 2026 · <strong>Project:</strong> CalendarRules, an independently developed open-source eisy / IoX plugin</p>
+<p>CalendarRules reads Google Calendar event information so that users can map their own calendars to existing Universal Devices IoX state variables. This policy describes how the CalendarRules plugin accesses, uses, stores, and shares Google user data. It is designed to run on a user's own eisy controller, not as a hosted calendar-processing service operated by the developer.</p>
+
+<h2>Google information requested</h2>
+<p>CalendarRules requests the Google Calendar read-only OAuth permissions <code>https://www.googleapis.com/auth/calendar.events.readonly</code> and <code>https://www.googleapis.com/auth/calendar.calendarlist.readonly</code>. These permissions let the plugin retrieve calendar lists, selected calendars, and their events; they do not authorize CalendarRules to create, edit, or delete Google Calendar events.</p>
+<p>The event data retrieved for the calendars a user configures can include event titles, locations, start and end times, recurrence and cancellation information, and technical event identifiers used to interpret the schedule. Calendar IDs and matching rules are stored as user-supplied configuration.</p>
+
+<h2>How Google data is used</h2>
+<p>CalendarRules checks calendar event titles or locations against the user's configured rules and time offsets. It calculates whether each configured existing IoX type-2 state variable should have value 0 or 1, subject to the plugin's authorization and safety checks. The user's own ISY programs determine what to do with those variables.</p>
+<p>Google Calendar event data is not used for advertising, marketing profiles, or unrelated analytics, and is not sold. CalendarRules does not directly command HVAC, lighting, doors, or other equipment.</p>
+
+<h2>Where data is stored</h2>
+<p>CalendarRules runs on a user's eisy controller. It saves configuration in the eisy-ui / Polyglot supported configuration storage and retains a local event schedule cache to evaluate events between Google requests and during temporary connectivity failures. The cache may contain event titles, locations, times and processed event identifiers. Its configured maximum offline eligibility is 30 days, subject to actual schedule coverage; this is a validity limit, not a guarantee that stored files are automatically erased after 30 days.</p>
+<p>OAuth authorization and refresh tokens are handled by the Universal Devices eisy-ui / Polyglot OAuth integration. CalendarRules does not intentionally include tokens in its schedule cache or source repository. The plugin's calendar schedule cache uses restricted local file permissions and integrity checks; it is not encrypted at rest by the plugin. eisy-ui backups or other user-controlled device backups may retain local plugin data.</p>
+
+<h2>Sharing and third-party services</h2>
+<p>CalendarRules communicates with Google Calendar APIs to retrieve information requested by the user and uses the Universal Devices eisy-ui / Polyglot platform for OAuth, configuration, status and local IoX integration. Calendar-derived decisions are sent to the user's own IoX system as numeric variable values. The plugin is not designed to upload calendar event contents to a separate developer-operated server.</p>
+<p>CalendarRules is open source and published on GitHub. The project website is served through GitHub Pages. Those services may process website or repository visits under their own privacy policies; visiting this website is distinct from authorizing the plugin to access Google Calendar.</p>
+
+<h2>What appears in logs and status</h2>
+<p>Status notices can show rule names, state-variable IDs, event times, and aggregate counts. Display of event titles is optional and off by default; event locations are not intended to appear in activity notices. Users should still avoid sharing diagnostic logs or screenshots publicly without checking for private calendar or configuration details. The plugin requires safe logging settings for Google authentication and IoX writes.</p>
+
+<h2>Retention, revocation, and deletion</h2>
+<p>Users control which calendars and rules they configure. They may revoke CalendarRules access in their Google Account's third-party connections / permissions settings. Revocation stops future authorized Google Calendar requests but does not automatically erase local cached events, configuration, OAuth records, or backups from an eisy controller.</p>
+<p>Users can disable rules, stop or uninstall the plugin, and remove local plugin data using their controller's supported management and backup procedures. Reinstallation or restoring a backup may restore prior data. Consult the Universal Devices platform documentation before deleting protected application files; if you need help understanding what remains stored, contact the project through the support link below without posting confidential data.</p>
+
+<h2>Security and limitations</h2>
+<p>CalendarRules is beta software. Missing or untrusted schedules cause its write gate to close rather than treating missing events as an empty calendar. Previously set state variables can remain at their last value if the plugin stops or loses authorization; users are responsible for independent equipment fail-safes. For further details, see the <a href="https://github.com/mike-2545/CalendarRules/blob/main/SECURITY.md">security documentation</a>.</p>
+
+<h2>Updates and contact</h2>
+<p>Material changes to Google data handling will be reflected in this policy and dated here before being introduced to general users. For privacy questions, support, or requests about the project, use <a href="https://github.com/mike-2545/CalendarRules/issues">CalendarRules GitHub Issues</a>. Do not include OAuth tokens, calendar contents, addresses, or passwords in public reports.</p>
+<p>CalendarRules' use of Google user information is intended to be limited to providing and improving the user-facing calendar-to-variable functionality described here and to follow the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including its Limited Use requirements.</p>
+<p><a href="/">Return to the CalendarRules homepage</a></p>
+</main>
+<footer class="footer"><div class="wrap"><span>© 2026 CalendarRules</span><span><a href="/">Home</a><a href="https://github.com/mike-2545/CalendarRules">Source</a></span></div></footer>
+</body></html>
