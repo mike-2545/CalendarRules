@@ -1,0 +1,38 @@
+{
+  "plugin": {
+    "name": "CalendarRules",
+    "description": "Offline-safe Google Calendar rule controller",
+    "publisher": "eisy-google-calendar",
+    "language": "python3",
+    "executableName": "main.py",
+    "installScript": "install.sh",
+    "documentationLink": "https://github.com/mike-2545/eisy-google-calendar/blob/main/README.md",
+    "licenseLink": "https://github.com/mike-2545/eisy-google-calendar/blob/main/LICENSE",
+    "shortPoll": 60,
+    "longPoll": 900,
+    "profileVersion": "3.0.0",
+    "initialLogLevel": "INFO",
+    "enableDiscovery": false,
+    "enableOAUTH2": true,
+    "worksOnPolisy": false,
+    "worksOnEisy": true,
+    "requiresIoXAccess": true,
+    "requirements": [],
+    "version": "0.4.10"
+  },
+  "editors": [],
+  "nodedefs": [
+    {
+      "id": "calctrl",
+      "name": "CalendarRules",
+      "icon": "Weather",
+      "properties": [
+        {"id": "ST", "editor": "bool", "name": "Online"}
+      ],
+      "commands": {
+        "accepts": [{"id": "REFRESH", "name": "Refresh Now"}],
+        "sends": []
+      }
+    }
+  ]
+}

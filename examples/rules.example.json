@@ -1,0 +1,22 @@
+{
+  "note": "DESIGN EXAMPLE ONLY: no running plugin currently reads this file",
+  "calendar_ids": ["primary"],
+  "timezone": "America/New_York",
+  "poll_seconds": 60,
+  "rules": [
+    {
+      "name": "Workshop",
+      "match": {"match_field": "title", "title_contains": "Workshop", "case_sensitive": false},
+      "isy_state_variable_id": 10,
+      "start_offset_minutes": -30,
+      "end_offset_minutes": 0
+    },
+    {
+      "name": "Conference Room",
+      "match": {"match_field": "location", "title_contains": "Conference Room", "case_sensitive": false},
+      "isy_state_variable_id": 5,
+      "start_offset_minutes": -120,
+      "end_offset_minutes": 0
+    }
+  ]
+}

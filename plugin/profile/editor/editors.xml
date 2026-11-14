@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editors>
+  <editor id="online">
+    <range uom="25" subset="0,1" nls="ONLINE"/>
+  </editor>
+  <editor id="refreshStatus">
+    <range uom="25" subset="0,1,2,3,4" nls="REFRESH_STATUS"/>
+  </editor>
+  <editor id="cacheStatus">
+    <range uom="25" subset="0,1" nls="CACHE_STATUS"/>
+  </editor>
+  <editor id="statusCount">
+    <range uom="56" min="0" max="10000" prec="0" step="1"/>
+  </editor>
+  <editor id="ioxStatus">
+    <range uom="25" subset="0,1,2,3" nls="IOX_STATUS"/>
+  </editor>
+</editors>

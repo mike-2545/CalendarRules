@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nodeDefs>
+  <nodeDef id="calctrl" nls="calctrl">
+    <editors/>
+    <sts>
+      <st id="ST" editor="online"/>
+      <st id="GV0" editor="refreshStatus"/>
+      <st id="GV1" editor="cacheStatus"/>
+      <st id="GV2" editor="statusCount"/>
+      <st id="GV3" editor="statusCount"/>
+      <st id="GV4" editor="ioxStatus"/>
+    </sts>
+    <cmds>
+      <sends/>
+      <accepts>
+        <cmd id="REFRESH"/>
+      </accepts>
+    </cmds>
+  </nodeDef>
+</nodeDefs>

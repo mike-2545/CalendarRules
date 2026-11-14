@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+# Secrets / authentication
+credentials.json
+client_secret*.json
+token.json
+token.pickle
+*.p12
+*.pem
+*.key
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.dump
+calendar-rules-approved-target.json
+.calendar-rules-approved-target.json
+.env
+.env.*
+!*.example.env
+# Calendar exports and runtime data
+*.csv
+*.xls
+*.xlsx
+*.calendar-cache.json
+.calendar-cache/
+runtime/
+logs/
+*.log
+dist-store/
+.offline-deployment-*/
+.iox-trust/
+.iox-state-writes-enabled
+.iox-state-writes-enabled.*
+# Editors
+.vscode/
+.idea/

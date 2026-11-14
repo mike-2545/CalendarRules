@@ -1,0 +1,126 @@
+"""Pure calendar rule evaluation for eisy-google-calendar."""
+
+from .activity import (
+    ActivityItem,
+    ActivityResult,
+    VariableActivity,
+    calculate_activity,
+    format_activity_notice,
+    format_activity_notices,
+)
+from .auth import (
+    CALENDAR_EVENTS_READONLY,
+    CALENDAR_LIST_READONLY,
+    AuthorizationResult,
+    OAuthConfiguration,
+    OAuthState,
+    UdiOAuthTokenProvider,
+    discover_authorized_calendars,
+)
+from .calendar_discovery import CalendarSummary
+from .cached_schedule import (
+    ALLOWED_REFRESH_HOURS,
+    DEFAULT_REFRESH_HOURS,
+    CachedScheduleEngine,
+    SchedulePolicy,
+    ScheduleTick,
+)
+from .config_identity import CONFIG_FINGERPRINT_VERSION, configuration_fingerprint
+from .evaluator import event_matches_rule, evaluate_snapshot, title_matches
+from .models import (
+    DEFAULT_MATCH_FIELD,
+    DEFAULT_TITLE_MATCH_TYPE,
+    MATCH_FIELDS,
+    TITLE_MATCH_TYPES,
+    CalendarConfig,
+    CalendarEvent,
+    CalendarSnapshot,
+    EvaluationResult,
+    Rule,
+    SnapshotStatus,
+)
+from .preview import (
+    PreviewResult,
+    format_preview,
+    preview_google_responses,
+    preview_snapshot,
+)
+from .snapshot_store import (
+    CACHE_VERSION,
+    FileSnapshotStorage,
+    SnapshotCacheError,
+    decode_snapshot,
+    encode_snapshot,
+)
+from .ui_configuration import (
+    DEFAULT_TIMEZONE,
+    MAX_OFFSET_MINUTES,
+    MIN_OFFSET_MINUTES,
+    UiConfiguration,
+    load_typed_configuration,
+    typed_parameter_schema,
+)
+from .validation import (
+    ConfigurationError,
+    load_config,
+    load_config_data,
+    validate_event,
+    validate_rule,
+)
+
+__all__ = [
+    "ActivityItem",
+    "ActivityResult",
+    "ALLOWED_REFRESH_HOURS",
+    "AuthorizationResult",
+    "CACHE_VERSION",
+    "CachedScheduleEngine",
+    "CALENDAR_EVENTS_READONLY",
+    "CALENDAR_LIST_READONLY",
+    "CalendarConfig",
+    "CalendarEvent",
+    "CalendarSnapshot",
+    "CalendarSummary",
+    "CONFIG_FINGERPRINT_VERSION",
+    "configuration_fingerprint",
+    "ConfigurationError",
+    "decode_snapshot",
+    "DEFAULT_MATCH_FIELD",
+    "DEFAULT_REFRESH_HOURS",
+    "DEFAULT_TITLE_MATCH_TYPE",
+    "DEFAULT_TIMEZONE",
+    "discover_authorized_calendars",
+    "encode_snapshot",
+    "evaluate_snapshot",
+    "event_matches_rule",
+    "EvaluationResult",
+    "FileSnapshotStorage",
+    "format_preview",
+    "load_config",
+    "load_config_data",
+    "load_typed_configuration",
+    "MAX_OFFSET_MINUTES",
+    "MATCH_FIELDS",
+    "MIN_OFFSET_MINUTES",
+    "OAuthConfiguration",
+    "OAuthState",
+    "preview_google_responses",
+    "preview_snapshot",
+    "PreviewResult",
+    "Rule",
+    "SchedulePolicy",
+    "ScheduleTick",
+    "SnapshotCacheError",
+    "SnapshotStatus",
+    "TITLE_MATCH_TYPES",
+    "title_matches",
+    "typed_parameter_schema",
+    "UdiOAuthTokenProvider",
+    "UiConfiguration",
+    "VariableActivity",
+    "calculate_activity",
+    "format_activity_notice",
+    "format_activity_notices",
+    "validate_event",
+    "validate_rule",
+]
