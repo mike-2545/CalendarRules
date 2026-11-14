@@ -332,7 +332,7 @@ def main() -> None:
     if read_only_probe is not None:
         controller_kwargs["iox_read_only_probe"] = read_only_probe
     controller = CalendarController(polyglot, **controller_kwargs)
-    polyglot.start({"version": "0.4.10", "requestId": False})
+    polyglot.start({"version": "0.4.11", "requestId": False})
     polyglot.ready()
     _publish_static_profile(polyglot)
     controller.register_node()
