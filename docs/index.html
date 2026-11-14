@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="CalendarRules is an open-source eisy and IoX plugin that translates read-only Google Calendar events into existing ISY state variables.">
+<title>CalendarRules — Google Calendar automation for eisy / IoX</title>
+<link rel="canonical" href="https://calendarrules.org/">
+<link rel="stylesheet" href="/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap"><a class="brand" href="/">CalendarRules</a><nav aria-label="Primary navigation"><a href="#how-it-works">How it works</a><a href="#getting-started">Getting started</a><a href="/privacy/">Privacy</a><a href="https://github.com/mike-2545/CalendarRules">GitHub</a></nav></div></header>
+<main id="main">
+<section class="hero"><div class="wrap">
+<div class="eyebrow">Open-source Google Calendar integration for Universal Devices</div>
+<h1>Your calendar sets the schedule. Your ISY decides what to do.</h1>
+<p class="lead">CalendarRules reads events from Google Calendar and uses rules to update existing IoX type-2 state variables. Write your own ISY programs for lights, HVAC, notifications, or anything else—CalendarRules does not control equipment directly.</p>
+<div class="actions"><a class="btn" href="#getting-started">Get started</a><a class="btn ghost" href="https://github.com/mike-2545/CalendarRules">View source code</a></div>
+</div></section>
+<section id="how-it-works" class="section"><div class="wrap">
+<h2>Simple rules, existing automation</h2>
+<div class="flow" aria-label="CalendarRules data flow">Google Calendar (read-only) → Title / location rules → Time offsets → Existing IoX state variables → Your ISY programs</div>
+<div class="grid" style="margin-top:25px">
+<div class="tile"><h3>Match the event</h3><p>Use keywords and matching options for an event's title or location. Select calendars you want to read.</p></div>
+<div class="tile"><h3>Choose the timing</h3><p>Start a variable early or end it later with independent minute offsets. Overlapping events are evaluated together.</p></div>
+<div class="tile"><h3>Keep control in IoX</h3><p>Map each rule to an existing state variable. Your ISY programs determine the physical actions.</p></div>
+</div>
+<div class="note"><strong>Safety is intentional.</strong> Untrusted or incomplete calendar information does not automatically mean “everything OFF.” An already-ON variable can retain its value if the plugin stops, authorization is lost, or the license expires. Use independent fail-safe logic for equipment.</div>
+</div></section>
+<section id="getting-started" class="section tint"><div class="wrap">
+<h2>Getting started</h2>
+<p>CalendarRules v0.4.10 is in Beta. It has been tested on multiple eisy installations, but additional OAuth, update/restore, and complete event-lifecycle testing remains. Please test with an isolated state variable first.</p>
+<div class="grid">
+<div class="tile"><h3>1. Install</h3><p>Find CalendarRules in the Universal Devices eisy-ui Plugin Store and activate an available Beta edition.</p></div>
+<div class="tile"><h3>2. Authorize and configure</h3><p>Use Google Authenticate, add calendar IDs, and create rules mapped to existing IoX type-2 state variables.</p></div>
+<div class="tile"><h3>3. Build your ISY programs</h3><p>Verify the schedule and variable readback before connecting any real-world automation.</p></div>
+</div>
+<p style="margin-top:23px"><a href="https://github.com/mike-2545/CalendarRules/blob/main/docs/getting-started.md">Read the installation guide</a> · <a href="https://github.com/mike-2545/CalendarRules/blob/main/docs/isy-program-examples.md">Example ISY programs</a></p>
+</div></section>
+<section class="section"><div class="wrap">
+<h2>Google Calendar data and privacy</h2>
+<p>CalendarRules requests Google Calendar read-only access to obtain scheduled events. The plugin uses selected event titles, locations, and times to evaluate rules. It stores a local schedule cache to support evaluation through temporary network interruptions; OAuth credentials are managed through the eisy-ui platform's protected integration.</p>
+<p><a href="/privacy/">Read the full CalendarRules privacy policy</a> for details on access, storage, sharing, retention, and revocation.</p>
+<h2 style="margin-top:40px">Independent, open source</h2>
+<p>CalendarRules is an independently developed community project for Universal Devices eisy/IoX, not an official Google or Universal Devices product. The source is licensed under MIT. For support or to report a problem, visit the <a href="https://github.com/mike-2545/CalendarRules/issues">GitHub issue tracker</a>; do not post tokens, passwords, or private event details.</p>
+</div></section>
+</main>
+<footer class="footer"><div class="wrap"><span>© 2026 CalendarRules · Independent open-source project</span><span><a href="/privacy/">Privacy policy</a><a href="https://github.com/mike-2545/CalendarRules">Source</a><a href="https://github.com/mike-2545/CalendarRules/issues">Support</a></span></div></footer>
+</body></html>
