@@ -1,0 +1,75 @@
+name: Package CalendarRules 0.4.14 help update
+on:
+  pull_request:
+    paths:
+      - .github/workflows/package-0.4.14.yml
+      - plugin/**
+      - src/**
+      - tests/**
+      - scripts/**
+      - CHANGELOG.md
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/package-0.4.14.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build twice and verify byte-identical ZIPs
+        run: |
+          test -z "$(git status --porcelain)"
+          echo "SOURCE_COMMIT=$(git rev-parse HEAD)"
+          python scripts/build_store_package.py --output-dir "$RUNNER_TEMP/a" --require-clean
+          python scripts/build_store_package.py --output-dir "$RUNNER_TEMP/b" --require-clean
+          cmp "$RUNNER_TEMP/a/CalendarRules-0.4.14.zip" "$RUNNER_TEMP/b/CalendarRules-0.4.14.zip"
+          cmp "$RUNNER_TEMP/a/CalendarRules-0.4.14.manifest.sha256" "$RUNNER_TEMP/b/CalendarRules-0.4.14.manifest.sha256"
+          python - "$RUNNER_TEMP/a/CalendarRules-0.4.14.zip" <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import sys
+          import zipfile
+          archive = pathlib.Path(sys.argv[1])
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None, "ZIP integrity check failed"
+              assert z.namelist() == sorted(z.namelist()), "ZIP entries not sorted"
+              assert all(not p.startswith("plugin/") for p in z.namelist())
+              for line in z.read("PACKAGE_MANIFEST.sha256").decode().splitlines():
+                  digest, name = line.split("  ", 1)
+                  assert hashlib.sha256(z.read(name)).hexdigest() == digest, name
+              meta = json.loads(z.read("eisy_google_calendar.iox_plugin.json"))
+              assert meta["plugin"]["version"] == "0.4.14"
+              assert b'polyglot.start({"version": "0.4.14", "requestId": False})' in z.read("main.py")
+              from pathlib import Path
+              import ast
+              tree = ast.parse(z.read("eisy_google_calendar/ui_configuration.py"))
+              schema = next(node.value for node in tree.body if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "_TYPED_PARAMETER_SCHEMA" for t in node.targets))
+              print("Verified 0.4.14 metadata and embedded config schema; ZIP entries:",len(z.namelist()))
+          print("ZIP_SHA256="+hashlib.sha256(archive.read_bytes()).hexdigest())
+          PY
+          mkdir -p dist
+          cp "$RUNNER_TEMP/a/CalendarRules-0.4.14.zip" dist/
+          cp "$RUNNER_TEMP/a/CalendarRules-0.4.14.manifest.sha256" dist/
+          sha256sum dist/* > dist/SHA256SUMS.txt
+          cat dist/SHA256SUMS.txt
+      - name: Upload native eisy-ui release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: CalendarRules-0.4.14-native-beta-candidate
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 90

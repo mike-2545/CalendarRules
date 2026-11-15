@@ -112,7 +112,7 @@ def test_metadata_requests_owner_approved_iox_access():
     assert plugin["enableOAUTH2"] is True
     assert plugin["enableDiscovery"] is False
     assert plugin["shortPoll"] == 60
-    assert plugin["version"] == "0.4.13"
+    assert plugin["version"] == "0.4.14"
     assert "customParams" not in plugin
     assert "oauthParams" not in plugin
     assert "hardwareConfig" not in plugin
@@ -122,8 +122,8 @@ def test_runtime_and_plugin_metadata_versions_match():
     metadata = json.loads((PLUGIN / "eisy_google_calendar.iox_plugin.json").read_text())
     main_source = (PLUGIN / "main.py").read_text()
 
-    assert metadata["plugin"]["version"] == "0.4.13"
-    assert 'polyglot.start({"version": "0.4.13", "requestId": False})' in main_source
+    assert metadata["plugin"]["version"] == "0.4.14"
+    assert 'polyglot.start({"version": "0.4.14", "requestId": False})' in main_source
     assert metadata["plugin"]["profileVersion"] == "3.0.0"
     assert (PLUGIN / "profile/version.txt").read_text().strip() == "1.2.0"
 
@@ -806,7 +806,7 @@ def test_launcher_constructs_controller_before_start(monkeypatch):
 
     assert events == [
         ("controller", fake_poly),
-        ("start", {"version": "0.4.13", "requestId": False}),
+        ("start", {"version": "0.4.14", "requestId": False}),
         "ready",
         "updateProfile",
         "register_node",
