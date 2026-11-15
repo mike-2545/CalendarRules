@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.14 — Guarded startup reconciliation (Beta candidate; not yet published)
+## 0.4.14 — Guarded startup reconciliation (native Beta, 2026-11-15)
 
 - Permit one fully guarded startup reconciliation after the first genuine short-poll callback, instead of waiting for three callbacks before any state-variable update.
 - Retain verified, fresh polling for ongoing reconciliation and fail closed if callbacks are missing, late, or duplicated.
@@ -8,7 +8,7 @@
 - Improve startup, scheduler and Allow API Access notices so users know what is happening and what actions help.
 - Add regressions for no-poll, failed-poll, missed/duplicate poll, restart, and ON/OFF recovery scenarios.
 
-**Status:** PR #14 merged with the full regression and security workflows passing. This is a versioned Beta **candidate** for controlled Barn testing; it has not been uploaded to the UD Store or installed. The last live-accepted version is 0.4.13.
+**Live acceptance (Barn eisy, November 15, 2026):** Owner installed native Beta `0.4.14` in the existing Barn CalendarRules installation (slot 2). Screenshots confirm startup notices, Google Calendar node **Connected**, trusted calendar data, configured type-2 variables `32` and `33` readable, and later a successful Google refresh with five events evaluated, two desired ON, the IoX write gate open, and **IoX state write and readback verified**. The startup notice changed to explain that initial reconciliation is available after the first scheduler callback. The later write/readback confirms operational reconciliation, **but the screenshots alone do not prove that a write happened on the first poll** rather than after full cadence verification. No post-0.4.14 backup, complete ON→OFF event cycle, or missed-poll live recovery is established by these screenshots. PR #14 and the 0.4.14 release package PR #15 were merged after regression and security checks; the package build was reproducible. Issue #13 was closed with the merged implementation; first-poll timing and remaining live lifecycle checks are still useful acceptance follow-ups.
 
 ## 0.4.13 — Native Beta configuration help update (2026-11-15)
 
