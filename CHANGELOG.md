@@ -1,13 +1,13 @@
 # Changelog
 
-## 0.4.13 — Configuration help update candidate (not yet published)
+## 0.4.13 — Native Beta configuration help update (2026-11-15)
 
 - Add practical help tooltips for every eisy-ui CalendarRules field, including Google Calendar ID, event matching, start/end offsets, rule enablement, existing type-2 state variable ID and privacy controls.
 - Correct outdated wording about offline previews and clarify the difference between hourly Google refresh and minute-by-minute cached schedule evaluation.
 - Add tests requiring a help description for each configuration field and validating key instructions.
 - No changes to scheduling, Google OAuth, IoX communication, cache permissions, or state-variable writing.
 
-**Status:** Reviewed tooltip PR #3 merged; preparing a deterministic 0.4.13 native Beta archive. Not yet published to the UD Store or installed on the Barn. The last live-accepted Barn version is 0.4.12.
+**Status:** Published in the UD native Beta Plugin Store and installed on the Barn eisy as `0.4.13` (owner-confirmed November 15, 2026). The Configuration screen visibly shows `?` help icons beside previously undocumented nested rule fields including Friendly rule name, Event match pattern, Match type, Case-sensitive match, existing IoX type-2 variable ID, and Start/End offsets. The 0.4.13 package was built reproducibly (37 ZIP entries) and passed regression, secret-scan, and packaging workflows before release. **Acceptance scope:** visual help-icon presence and reported version are confirmed; individual tooltip text, OAuth persistence, operational write/readback after this update, and a post-0.4.13 system backup have not yet been independently verified. The full scheduling/write and backup acceptance previously completed on 0.4.12 remains recorded below.
 
 ## 0.4.12 — Native Beta Store maintenance update (2026-11-15)
 

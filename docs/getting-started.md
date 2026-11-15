@@ -1,4 +1,4 @@
-# Getting started with CalendarRules (live-tested Beta 0.4.12; help update 0.4.13 pending)
+# Getting started with CalendarRules (Beta 0.4.13; configuration help visible on Barn)
 
 1. Install CalendarRules from the eisy-ui Plugin Store. The publisher must have an active Beta purchase option and a working archive.
 2. Under **Overview**, choose **Authenticate**, then authorize the Google Calendar account you want to read. The Google OAuth application currently requires separate public-consent review before general release.
@@ -22,3 +22,7 @@ The invalid-offset diagnostic was also tested live: with a start offset of `+120
 **Upgrade guidance:** Retain a successful backup before upgrading. If no Update button is available, eisy-ui may offer **Reinstall** on the existing plugin Overview. Do not use the separate publisher Install action or Delete as an update substitute. A browser HTTP 504 appeared during an otherwise successful installation; confirm the plugin's actual version and health before retrying anything.
 
 **Still unverified:** full restore, complete event ON/OFF lifecycle, failed-upgrade recovery, long-term OAuth token behavior, and public OAuth consent approval. Use isolated test variables before equipment automation.
+
+## Version 0.4.13 help update
+
+On November 15, 2026, the Barn eisy was upgraded to **0.4.13** and the owner verified that previously missing `?` help icons now appear beside nested Calendar Rules fields (including rule name, match pattern, match type, case sensitivity, type-2 state-variable ID, and timing offsets). The change adds help descriptions; it does not modify schedule evaluation or state-variable logic. The more extensive operation and backup acceptance documented above applies to **0.4.12**; fresh post-0.4.13 write/readback, backup, and tooltip-text-by-tooltip-text acceptance is still pending.
