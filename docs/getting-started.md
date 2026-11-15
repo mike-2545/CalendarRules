@@ -1,4 +1,4 @@
-# Getting started with CalendarRules (Beta 0.4.12)
+# Getting started with CalendarRules (live-tested Beta 0.4.12; help update 0.4.13 pending)
 
 1. Install CalendarRules from the eisy-ui Plugin Store. The publisher must have an active Beta purchase option and a working archive.
 2. Under **Overview**, choose **Authenticate**, then authorize the Google Calendar account you want to read. The Google OAuth application currently requires separate public-consent review before general release.

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.13 — Configuration help update candidate (not yet published)
+
+- Add practical help tooltips for every eisy-ui CalendarRules field, including Google Calendar ID, event matching, start/end offsets, rule enablement, existing type-2 state variable ID and privacy controls.
+- Correct outdated wording about offline previews and clarify the difference between hourly Google refresh and minute-by-minute cached schedule evaluation.
+- Add tests requiring a help description for each configuration field and validating key instructions.
+- No changes to scheduling, Google OAuth, IoX communication, cache permissions, or state-variable writing.
+
+**Status:** Reviewed tooltip PR #3 merged; preparing a deterministic 0.4.13 native Beta archive. Not yet published to the UD Store or installed on the Barn. The last live-accepted Barn version is 0.4.12.
+
 ## 0.4.12 — Native Beta Store maintenance update (2026-11-15)
 
 - Explain invalid adjusted event intervals when a positive start offset would place the effective start at or after the effective end. A successful Google fetch is reported separately from an untrusted local schedule evaluation.
