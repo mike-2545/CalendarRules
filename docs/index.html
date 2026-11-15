@@ -10,7 +10,7 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header><div class="wrap"><a class="brand" href="/">CalendarRules</a><nav aria-label="Primary navigation"><a href="#how-it-works">How it works</a><a href="#getting-started">Getting started</a><a href="/privacy/">Privacy</a><a href="https://github.com/mike-2545/CalendarRules">GitHub</a></nav></div></header>
+<header><div class="wrap"><a class="brand" href="/">CalendarRules</a><nav aria-label="Primary navigation"><a href="#how-it-works">How it works</a><a href="#getting-started">Getting started</a><a href="#calendar-compatibility">Calendar compatibility</a><a href="/privacy/">Privacy</a><a href="https://github.com/mike-2545/CalendarRules">GitHub</a></nav></div></header>
 <main id="main">
 <section class="hero"><div class="wrap">
 <div class="eyebrow">Open-source Google Calendar integration for Universal Devices</div>
@@ -37,6 +37,17 @@
 <div class="tile"><h3>3. Build your ISY programs</h3><p>Verify the schedule and variable readback before connecting any real-world automation.</p></div>
 </div>
 <p style="margin-top:23px"><a href="https://github.com/mike-2545/CalendarRules/blob/main/docs/getting-started.md">Read the installation guide</a> · <a href="https://github.com/mike-2545/CalendarRules/blob/main/docs/isy-program-examples.md">Example ISY programs</a></p>
+</div></section>
+<section id="calendar-compatibility" class="section"><div class="wrap">
+<h2>Calendar compatibility</h2>
+<p><strong>Already using Outlook or Apple Calendar?</strong> You can keep your familiar scheduling tools. CalendarRules reads Google Calendar, so the events you want to automate must be available on a Google Calendar that the authorized account can access. CalendarRules does not sync Outlook or iCloud calendars itself.</p>
+<div class="grid">
+<div class="tile"><h3>Microsoft Outlook</h3><p><a href="https://www.fieldstonsoftware.com/software/gsyncit5/">gSyncit</a> can synchronize classic Outlook calendars with Google Calendar. It does <strong>not</strong> support the new Outlook interface. <a href="https://www.onecal.io/calendar-sync">OneCal</a> is another option for connecting Outlook and Google calendars.</p></div>
+<div class="tile"><h3>Apple Calendar app</h3><p>If you schedule on a Google account through Apple's Calendar app, you may not need a sync service at all. <a href="https://support.apple.com/guide/calendar/add-calendars-and-calendar-accounts-icl4308d6701/mac">Add your Google account</a> and ensure the event is saved to a <strong>Google</strong> calendar, not an iCloud or local calendar.</p></div>
+<div class="tile"><h3>Apple iCloud Calendar</h3><p>If your events live in iCloud, a service such as <a href="https://www.onecal.io/features/apple-calendar-sync">OneCal</a> can synchronize them into Google Calendar. Confirm that the event's title, location, start time, and end time are preserved as needed for your rules.</p></div>
+</div>
+<div class="note"><strong>Check the destination calendar, not just the calendar app.</strong> Displaying Outlook or iCloud events alongside Google events is not the same as making those events available to CalendarRules. Verify a test event appears in Google Calendar under a calendar the plugin reads. One-way synchronization into Google is often enough; two-way sync is optional. Sync and subscription delays can affect time-sensitive automations, so test changes and cancellations and provide appropriate fallback logic.</div>
+<p>These third-party products are examples, not endorsements or required integrations. They are not developed, supported, or controlled by CalendarRules. Check current compatibility, pricing, privacy, and synchronization frequency with each provider.</p>
 </div></section>
 <section class="section"><div class="wrap">
 <h2>Google Calendar data and privacy</h2>
