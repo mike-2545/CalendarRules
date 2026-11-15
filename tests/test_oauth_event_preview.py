@@ -75,7 +75,6 @@ def configuration(*calendars):
     })
 
 
-
 def variable_38_configuration():
     return load_typed_configuration({
         "timezone": "America/New_York",
