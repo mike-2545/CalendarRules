@@ -177,8 +177,12 @@ def preview_snapshot(
             active_match_counts={},
             ignored_reasons={},
             source_event_count=None,
-            reason=_STATUS_REASONS.get(
-                status, "calendar snapshot could not be evaluated safely"
+            reason=(
+                "adjusted event interval is invalid"
+                if evaluation.invalid_interval_count > 0
+                else _STATUS_REASONS.get(
+                    status, "calendar snapshot could not be evaluated safely"
+                )
             ),
         )
 
