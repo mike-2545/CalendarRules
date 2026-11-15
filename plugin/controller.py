@@ -264,7 +264,13 @@ class CalendarController(udi_interface.Node):
 
         if not self._forced_status_snapshot_pending:
             return True
-        completed = self._report_status_snapshot(force=True)
+        # Re-publish ST after node registration, together with the other
+        # drivers.  Initial asynchronous ST=1 can race eisy-ui addNode.
+        # Short-poll recovery runs once, not every minute.
+        connection_ok = self._publish_connection_status(
+            self.started and not self.stopped
+        )
+        completed = self._report_status_snapshot(force=True) and connection_ok
         if completed:
             # End-to-end delivery remains the deployment verifier's job.  This
             # flag records only that every local SDK request returned normally.
@@ -502,6 +508,11 @@ class CalendarController(udi_interface.Node):
             "missing_scopes": "Calendar schedule blocked: required read-only scopes are unavailable.",
             "authentication_required": "Google authentication is required before calendar refresh.",
             "untrusted": "Calendar schedule is untrusted; no state decisions were produced.",
+            "invalid_interval": (
+                "Calendar rule has an invalid adjusted event interval: "
+                "adjusted start must be before adjusted end. "
+                "No state variables changed. Check start and end offsets."
+            ),
             "api_error": "Calendar refresh could not complete; no state decisions were produced.",
         }
         self._notice(
@@ -511,10 +522,19 @@ class CalendarController(udi_interface.Node):
         self._publish_activity_unavailable()
         if self._manual_refresh_pending:
             self._manual_refresh_pending = False
-            self._set_refresh_status("failed")
-            self._refresh_notice(
-                "Refresh Now failed; the last trusted cache was preserved."
-            )
+            # A successful Google fetch can still yield an invalid local
+            # evaluation; keep API refresh health distinct from schedule trust.
+            if getattr(outcome, "refresh_succeeded", None) is True:
+                self._set_refresh_status("succeeded")
+                self._refresh_notice(
+                    "Google Calendar refresh succeeded, but the schedule "
+                    "evaluation is unavailable. No state variables changed."
+                )
+            else:
+                self._set_refresh_status("failed")
+                self._refresh_notice(
+                    "Refresh Now failed; the last trusted cache was preserved."
+                )
         elif getattr(outcome, "refresh_succeeded", None) is False:
             self._set_refresh_status("failed")
         return False

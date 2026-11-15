@@ -1284,6 +1284,74 @@ def test_failed_status_driver_publication_is_retried_without_false_success(contr
     assert probe.driver_updates == after_success
 
 
+
+def test_post_registration_short_poll_repairs_stale_disconnected_driver(controller):
+    bridge = FakePeriodicPreviewProbe()
+    bridge.status = bridge._status_type.GRANT_RECEIVED
+    poly = FakePolyglot()
+    probe = type(controller)(poly, oauth_bridge=bridge)
+    assert probe.typedConfigurationHandler(typed_payload())
+    probe._config_done()
+    probe._start_event()
+    probe.register_node()
+
+    # Simulate eisy-ui not receiving the initial asynchronous ST=1 request.
+    for item in probe.drivers:
+        if item["driver"] == "ST":
+            item["value"] = 0
+    probe.driver_updates.clear()
+    callbacks = {key: callback for key, callback, _ in poly.subscriptions}
+    assert callbacks["POLL"]("shortPoll") is True
+    assert ("ST", 1, True, True) in probe.driver_updates
+    assert probe.getDriver("ST") == 1
+
+    after_recovery = list(probe.driver_updates)
+    assert callbacks["POLL"]("shortPoll") is True
+    assert probe.driver_updates == after_recovery
+
+    probe._stop_event()
+    assert probe.getDriver("ST") == 0
+
+
+def test_invalid_interval_shows_successful_google_fetch_and_no_trusted_schedule(controller):
+    class InvalidIntervalBridge(FakePeriodicPreviewProbe):
+        def __init__(self):
+            super().__init__()
+            self.status = self._status_type.GRANT_RECEIVED
+            self.pending = False
+
+        def request_refresh(self, _config):
+            self.pending = True
+            return SimpleNamespace(status="pending", manual_refresh_pending=True)
+
+        def schedule_tick(self, _config):
+            if self.pending:
+                self.pending = False
+                return SimpleNamespace(
+                    status="invalid_interval",
+                    refresh_succeeded=True,
+                    manual_refresh_pending=False,
+                    events_checked=0,
+                )
+            return SimpleNamespace(status="idle")
+
+    poly = FakePolyglot()
+    probe = type(controller)(poly, oauth_bridge=InvalidIntervalBridge())
+    probe.register_node()
+    assert probe.typedConfigurationHandler(typed_payload())
+    probe._config_done()
+    probe._start_event()
+    assert probe.refresh_now() is True
+    assert probe._periodic_schedule_handler() is False
+    assert probe.refresh_status == "succeeded"
+    assert probe.cache_status == "unavailable"
+    assert probe.events_evaluated == 0
+    assert probe.targets_desired_on == 0
+    assert "invalid adjusted event interval" in poly.Notices["google_auth"]
+    assert "refresh succeeded" in poly.Notices["calendar_refresh"]
+    assert "Refresh Now failed" not in poly.Notices["calendar_refresh"]
+
+
 def test_first_short_poll_forces_latest_complete_snapshot_after_registration(controller):
     class ChangingSchedule(FakePeriodicPreviewProbe):
         def __init__(self):
@@ -1319,6 +1387,7 @@ def test_first_short_poll_forces_latest_complete_snapshot_after_registration(con
 
     forced = [update for update in probe.driver_updates if update[3] is True]
     assert forced == [
+        ("ST", 1, True, True),
         ("GV0", 0, True, True),
         ("GV1", 1, True, True),
         ("GV2", 7, True, True),
@@ -1351,6 +1420,7 @@ def test_forced_snapshot_retries_local_failure_on_later_short_poll(controller):
     probe.driver_updates.clear()
     assert callbacks["POLL"]("shortPoll") is True
     assert [update[0] for update in probe.driver_updates if update[3] is True] == [
+        "ST",
         "GV0",
         "GV1",
         "GV2",

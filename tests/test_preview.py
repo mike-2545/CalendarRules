@@ -109,6 +109,28 @@ def test_preview_handles_dst_overlap_recurring_cancellation_all_day_and_offsets(
     assert result.ignored_reasons == {"cancelled": 1, "all_day": 1}
 
 
+
+def test_invalid_positive_start_offset_has_specific_redacted_failure_reason():
+    config = _config(Rule(
+        "Workshop rule", "Workshop", 101,
+        start_offset_minutes=120, end_offset_minutes=0,
+    ))
+    result = preview_google_responses(
+        config,
+        _one_page([_timed(
+            "PRIVATE_EVENT_ID", summary="Workshop PRIVATE_TITLE",
+            start="2025-03-09T07:00:00Z",
+            end="2025-03-09T08:00:00Z",
+        )]),
+        now=NOW,
+    )
+    assert result.trusted is False
+    assert result.desired_states == {}
+    assert result.reason == "adjusted event interval is invalid"
+    assert "PRIVATE_EVENT_ID" not in (result.reason or "")
+    assert "PRIVATE_TITLE" not in (result.reason or "")
+
+
 def test_valid_empty_calendar_is_the_only_empty_input_that_can_turn_rule_off():
     result = preview_google_responses(_config(), _one_page([]), now=NOW)
     assert result.trusted is True

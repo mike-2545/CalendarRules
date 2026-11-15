@@ -404,7 +404,9 @@ class ReadOnlyOAuthEventPreview(ReadOnlyOAuthDiscoveryProbe):
                     using_cached_data=self._schedule_engine.consecutive_failures > 0,
                 )
             return PeriodicPreviewSummary(
-                "untrusted",
+                "invalid_interval"
+                if tick.preview.reason == "adjusted event interval is invalid"
+                else "untrusted",
                 refresh_attempted=tick.refresh_attempted,
                 refresh_succeeded=tick.refresh_succeeded,
                 evaluated=True,
