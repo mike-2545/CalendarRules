@@ -1,28 +1,109 @@
-# Getting started with CalendarRules (Beta 0.4.13; configuration help visible on Barn)
+# Getting started with CalendarRules
 
-1. Install CalendarRules from the eisy-ui Plugin Store. The publisher must have an active Beta purchase option and a working archive.
-2. Under **Overview**, choose **Authenticate**, then authorize the Google Calendar account you want to read. The Google OAuth application currently requires separate public-consent review before general release.
-3. Open **Configuration**, select an IANA timezone, add one or more Google Calendar IDs, and add enabled rule(s).
-4. Each rule specifies a friendly name, `title` or `location` match field, pattern, match type (`contains`, `exact`, `starts_with`, `ends_with`), case sensitivity, an **existing type-2 IoX state-variable ID**, start/end minute offsets and Enabled.
-5. Save Changes, check Overview for a trusted calendar, and validate an isolated test state variable before allowing the owner-authorized IoX API access.
-6. Build your own IoX programs to respond to state variable values; CalendarRules does not create state variables and does not directly control HVAC, doors or lights.
+CalendarRules connects **Google Calendar events to existing IoX type-2 state variables**. It does not create state variables, control equipment, or edit Google Calendar events. Your own ISY programs decide what a variable means.
 
-**Safety:** Never use an existing facility-equipment variable for the first test. A variable can remain at its last value if the plugin stops, authorization fails, or its license expires. Create separate ISY fail-safe logic where necessary.
+> **Beta v0.4.13.** The Barn test eisy has been upgraded using the existing plugin's **Reinstall** action and the configuration help icons have been verified. Test with a dedicated, unused state variable; do not begin with life-safety or production equipment. A full backup succeeded on Barn running eisy-ui 1.4.11; full restore, complete ON/OFF lifecycle and long-term OAuth token tests are still pending.
 
-The eisy-ui **Configuration Refresh** button reloads form values; it is not a Google Calendar refresh. Use the Google Calendar node's **Refresh Now** action for a forced calendar fetch where available.
+## Before you begin
 
-See [ISY program examples](isy-program-examples.md), [rule field details](eisy-ui-configuration.md), and [security guidance](../SECURITY.md).
+You need:
 
-## Testing status
+- A Universal Devices **eisy** running the supported integrated **eisy-ui** plugin system, with an available plugin slot and access to the eisy-ui Plugin Store.
+- An accessible Google Calendar and a Google account authorized to view its events.
+- An **existing IoX type-2 state variable** with a positive numeric ID that is **not used by production programs**.
+- Permission to manage the eisy, its plugins, and (when you are ready to test writes) its IoX API access.
 
-On November 15, 2026, the Barn eisy running eisy-ui 1.4.11 accepted CalendarRules Beta **0.4.12** through the existing plugin's **Reinstall** action. Google authorization, calendar data, rules, and cache persisted. The node reported Connected, a trusted schedule evaluated, and type-2 variable writes/readback were verified. A system backup succeeded after the upgrade.
+**Read the safety note first:** if Google access fails, the plugin stops, or its license expires, CalendarRules can leave a previously ON state variable at `1`. It intentionally does **not** assume missing schedule data means OFF. Design independent ISY-side fail-safe behavior before using variables for equipment.
 
-The invalid-offset diagnostic was also tested live: with a start offset of `+120` and a shorter matching event, CalendarRules correctly reported that the adjusted interval was invalid, that the Google fetch succeeded, and that no state decisions were produced. Returning to `-120` restored normal operation.
+## 1. Install from eisy-ui
 
-**Upgrade guidance:** Retain a successful backup before upgrading. If no Update button is available, eisy-ui may offer **Reinstall** on the existing plugin Overview. Do not use the separate publisher Install action or Delete as an update substitute. A browser HTTP 504 appeared during an otherwise successful installation; confirm the plugin's actual version and health before retrying anything.
+1. Open the **eisy-ui** interface for the eisy you intend to use.
+2. Find **CalendarRules** in the Plugin Store. The current Beta may require activation; visibility, pricing, and trial availability depend on its store listing.
+3. Install the plugin in an available slot. On a first installation, no calendars or enabled rules should yet be configured.
+4. Open **Local Plugins → CalendarRules** and check **Overview**.
 
-**Still unverified:** full restore, complete event ON/OFF lifecycle, failed-upgrade recovery, long-term OAuth token behavior, and public OAuth consent approval. Use isolated test variables before equipment automation.
+**Connected** means the plugin is communicating with Polyglot. It does **not** prove Google authentication, schedule trust, IoX authorization, or successful writes.
 
-## Version 0.4.13 help update
+If an installation dialog returns HTTP 504, **do not repeatedly install**. Check whether CalendarRules appears in Local Plugins and is running. Record the error and use [Troubleshooting](troubleshooting.md).
 
-On November 15, 2026, the Barn eisy was upgraded to **0.4.13** and the owner verified that previously missing `?` help icons now appear beside nested Calendar Rules fields (including rule name, match pattern, match type, case sensitivity, type-2 state-variable ID, and timing offsets). The change adds help descriptions; it does not modify schedule evaluation or state-variable logic. The more extensive operation and backup acceptance documented above applies to **0.4.12**; fresh post-0.4.13 write/readback, backup, and tooltip-text-by-tooltip-text acceptance is still pending.
+## 2. Authenticate Google Calendar
+
+1. Open CalendarRules **Overview** and select **Authenticate**.
+2. Choose the Google account that can read your intended calendar.
+3. Review the consent screen and grant the read-only Calendar permissions.
+4. Return to Overview and look for Google synchronization notices.
+
+CalendarRules uses `calendar.calendarlist.readonly` and `calendar.events.readonly`; it cannot create, edit, or delete Google events. A successful authorization message does **not** by itself prove that a schedule has been retrieved; configuration and trusted synchronization are separate steps.
+
+## 3. Locate the Google Calendar ID
+
+1. In **Google Calendar on the web**, open Settings for the specific calendar you want to use.
+2. Under **Integrate calendar**, copy the **Calendar ID**. You may also enter `primary` for the authenticated account's main Google calendar. Shared or secondary calendars may have longer IDs.
+3. Do not confuse a **Calendar ID** with a Google OAuth Client ID, API key, or client secret.
+4. In CalendarRules **Configuration**, select **Add Google Calendars**, enter the Calendar ID, and save.
+
+The account authorized in Step 2 must have read access to that calendar. **Every enabled rule currently applies to every configured calendar**, not just one selected rule-calendar pair.
+
+## 4. Create a harmless test rule
+
+Before creating the rule, identify an **existing type-2 state-variable ID** on your IoX that is not attached to devices or production programs. CalendarRules will not create one.
+
+Create a temporary Google Calendar event, for example:
+
+- **Title:** `CALENDARRULES_TEST`
+- **Time:** a short future window, after Google synchronization is expected
+- **Location:** optional
+
+In CalendarRules **Configuration → Add Calendar Rules**, enter:
+
+| Field in eisy-ui | Test value |
+| --- | --- |
+| Friendly rule name | `First Test` |
+| Match field | `title` |
+| Event match pattern | `CALENDARRULES_TEST` |
+| Match type | `contains` |
+| Case-sensitive match | `false` |
+| Existing IoX type-2 state-variable ID | **Your own unused test ID** |
+| Start offset in minutes | `0` |
+| End offset in minutes | `0` |
+| Rule enabled | `true` |
+
+Select **Save Changes**. Numeric and Boolean form values are text fields: use values such as `0`, `false`, and `true` exactly as shown. If a configuration is incomplete or invalid, CalendarRules will withhold schedule decisions.
+
+## 5. Confirm the schedule before allowing IoX writes
+
+In **Overview**, look for these independent conditions:
+
+- Google Calendar refresh **succeeded** and shows a last successful sync time.
+- Calendar configuration is **valid**, with at least one enabled rule.
+- Calendar activity shows a **trusted schedule** and the expected active/upcoming test event.
+- The configured existing type-2 variable is confirmed **readable**.
+
+IoX writes require the separate owner-granted **Allow API Access** permission in eisy-ui, verified variable checks, trusted data, safe logging, and observed minute polling. Enabling API access does **not** necessarily open the write gate immediately. In our tests, restarting the plugin after granting API access caused it to recognize the new permission; whether eisy-ui automatically pushes authorization changes to running plugins is still being clarified with UD.
+
+Once the write gate opens, observe the test variable change to `1` during the matching event and return to `0` after the final matching event ends. Check the **write/readback verified** or **state verified without a change** notice. Do not use this test as permission to connect production equipment automatically.
+
+If the variable does not change, see [Troubleshooting](troubleshooting.md). If more than one matching event requires the same variable ON, it stays ON until all effective event windows have ended.
+
+## 6. Decide what your ISY does with the variable
+
+After your test is proven and you have independent fail-safe logic, you can create ISY programs that react to a state variable. CalendarRules itself never commands HVAC, lights, or doors.
+
+See [ISY program examples](isy-program-examples.md) and the [field reference](configuration-reference.md).
+
+## 7. Verify persistence and backups
+
+- Save your configuration, refresh the browser, and confirm it persists. Recheck after a deliberate plugin restart only when safe.
+- Confirm that an eisy-ui backup **actually succeeds** before upgrading. The Barn eisy initially failed with HTTP 500 / `EACCES` while backing up the private cache, but backups succeeded—including persistent CalendarRules data—after upgrading to eisy-ui 1.4.11 / IoX 6.1.2_16 / UDX 5.3.0_4, without loosening cache permissions. This is a verified outcome on that test installation, not a universal minimum-version guarantee. See [Troubleshooting](troubleshooting.md).
+- On our tested eisy-ui installation, the existing plugin's **Reinstall** action fetched the newer Beta version in the same slot, preserving Google authorization, rules, and cache. Verify you have a successful backup first. Do **not** delete the plugin or use the separate publisher **Install** button to attempt an in-place update.
+
+## Help and privacy
+
+- [Configuration field reference](configuration-reference.md)
+- [Troubleshooting and error notices](troubleshooting.md)
+- [ISY examples and safety](isy-program-examples.md)
+- [Security and privacy guidance](../SECURITY.md)
+- [Privacy policy](https://calendarrules.org/privacy/)
+- [Report a bug or ask a question](https://github.com/mike-2545/CalendarRules/issues) — omit private calendar titles, tokens, passwords, and sensitive logs.
+
+**Release status (November 15, 2026):** CalendarRules Beta **v0.4.13** is installed on the Barn eisy, with missing configuration help icons now visible. During the prior 0.4.12 live test, Google OAuth/configuration/cache survived an in-place **Reinstall** upgrade; the node reported Connected, schedule evaluation and type-2 write/readback succeeded, an intentionally invalid +120-minute start offset failed closed, and changing back to -120 restored trusted scheduling. A Barn system backup also succeeded. The most recent 0.4.13 upgrade reportedly completed **without** the HTTP 504 warning seen on earlier installations; the cause of those earlier timeouts is not established. A full restore, complete event ON→OFF lifecycle, post-0.4.13 write/readback and backup, token longevity and public OAuth verification remain unverified.
