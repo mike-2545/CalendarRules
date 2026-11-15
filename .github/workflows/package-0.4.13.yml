@@ -3,11 +3,6 @@ on:
   pull_request:
     paths:
       - .github/workflows/package-0.4.13.yml
-      - plugin/**
-      - src/**
-      - tests/**
-      - scripts/**
-      - CHANGELOG.md
   push:
     branches: [main]
     paths:
