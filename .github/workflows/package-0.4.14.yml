@@ -1,4 +1,4 @@
-name: Package CalendarRules 0.4.14 help update
+name: Package CalendarRules 0.4.14 guarded startup update
 on:
   pull_request:
     paths:
