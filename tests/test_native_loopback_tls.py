@@ -382,11 +382,21 @@ def test_enabled_rule_reconciles_with_no_marker_and_never_touches_disabled_targe
     assert connection.requests == []
 
     targets.replace({38})  # Owner enabled and saved the configured rule.
-    gate.update_runtime(started=True, minute_poll_verified=False, last_short_poll_at=None)
+    gate.update_runtime(
+        started=True,
+        poll_requested=True,
+        minute_poll_verified=False,
+        last_short_poll_at=None,
+    )
     assert writer({38: 1}).status == "blocked"
     verified_type2[0] = True
     assert writer({38: 1}).status == "blocked"  # Poll cadence not verified.
-    gate.update_runtime(started=True, minute_poll_verified=True, last_short_poll_at=now[0])
+    gate.update_runtime(
+        started=True,
+        poll_requested=True,
+        minute_poll_verified=True,
+        last_short_poll_at=now[0],
+    )
     assert gate.enabled is True
     assert writer({38: 1}).status == "written"
     assert connection.value == 1
@@ -445,7 +455,12 @@ def test_disabling_one_of_two_rules_removes_only_that_target():
         configured_ids=lambda: registry.snapshot().variable_ids,
         monotonic_clock=lambda: clock[0],
     )
-    gate.update_runtime(started=True, minute_poll_verified=True, last_short_poll_at=50.0)
+    gate.update_runtime(
+        started=True,
+        poll_requested=True,
+        minute_poll_verified=True,
+        last_short_poll_at=50.0,
+    )
     writer = TrustedStateWriter(transport, gate, safe_logging=lambda: True)
     assert sdk.handler(sdk_data()) is True
     # An earlier schedule with both targets is now stale after disabling 39.

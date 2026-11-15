@@ -79,7 +79,9 @@ In **Overview**, look for these independent conditions:
 - Calendar activity shows a **trusted schedule** and the expected active/upcoming test event.
 - The configured existing type-2 variable is confirmed **readable**.
 
-IoX writes require the separate owner-granted **Allow API Access** permission in eisy-ui, verified variable checks, trusted data, safe logging, and observed minute polling. Enabling API access does **not** necessarily open the write gate immediately. In our tests, restarting the plugin after granting API access caused it to recognize the new permission; whether eisy-ui automatically pushes authorization changes to running plugins is still being clarified with UD.
+IoX writes require the separate owner-granted **Allow API Access** permission in eisy-ui, verified variable checks, trusted data, safe logging, and observed minute polling. At startup, CalendarRules requests minute polling but does not treat that request as proof that scheduling works. After the first real short-poll callback it may perform one fully guarded initial reconciliation; ongoing updates remain blocked until reliable cadence is observed. If no callback arrives or the polling request fails, no startup reconciliation occurs. **Refresh Now only retrieves Google Calendar data and does not advance scheduler verification. Avoid restarting while startup verification is in progress.**
+
+Enabling API access does **not** necessarily open the write gate immediately. In our observed tests, the reliable procedure was: enable **Allow API Access**, save, restart CalendarRules once, and verify the authorization and readable type-2 target notices. Whether eisy-ui should push authorization changes to a running plugin automatically is still being clarified with UD.
 
 Once the write gate opens, observe the test variable change to `1` during the matching event and return to `0` after the final matching event ends. Check the **write/readback verified** or **state verified without a change** notice. Do not use this test as permission to connect production equipment automatically.
 

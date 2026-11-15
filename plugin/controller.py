@@ -623,7 +623,9 @@ class CalendarController(udi_interface.Node):
                 "IoX target validation is awaiting valid CalendarRules configuration."
             ),
             "unauthorized": (
-                "IoX access is not authorized; configured state variables were not read or changed."
+                "IoX access is not authorized; configured state variables were not read or changed. "
+                "Enable Allow API Access in eisy-ui, save, restart CalendarRules, "
+                "then verify this status again."
             ),
             "pending": "IoX configured-target read-only validation is in progress.",
             "ready": "",
@@ -779,6 +781,7 @@ class CalendarController(udi_interface.Node):
         if callable(update):
             update(
                 started=self.started and not self.stopped,
+                poll_requested=self._minute_poll_requested,
                 minute_poll_verified=self._minute_poll_verified,
                 last_short_poll_at=self._last_short_poll_at,
             )
@@ -796,14 +799,25 @@ class CalendarController(udi_interface.Node):
             return
         previous = self._last_short_poll_at
         self._last_short_poll_at = now
-        if previous is None or now <= previous:
+        if previous is None:
             self._valid_short_poll_intervals = 0
             self._minute_poll_verified = False
             self._update_write_gate()
             self._notice(
                 "schedule_poll",
-                "Minute polling was requested and is awaiting observed cadence. "
-                "IoX writes remain disabled.",
+                "Initial reconciliation is available. CalendarRules is verifying "
+                "the periodic scheduler before enabling ongoing IoX updates. "
+                "Avoid restarting during startup.",
+            )
+            return
+        if now <= previous:
+            self._valid_short_poll_intervals = 0
+            self._minute_poll_verified = False
+            self._update_write_gate()
+            self._notice(
+                "schedule_poll",
+                "A duplicate scheduler callback did not advance cadence verification. "
+                "Ongoing IoX updates remain blocked until reliable cadence is observed.",
             )
             return
         elapsed = now - previous
@@ -818,14 +832,15 @@ class CalendarController(udi_interface.Node):
         elif self._valid_short_poll_intervals:
             self._notice(
                 "schedule_poll",
-                "Minute polling was requested and is awaiting observed cadence. "
-                "IoX writes remain disabled.",
+                "Initial reconciliation is available. CalendarRules is verifying "
+                "the periodic scheduler before enabling ongoing IoX updates. "
+                "Avoid restarting during startup.",
             )
         else:
             self._notice(
                 "schedule_poll",
-                "Minute polling has not been observed reliably. "
-                "IoX writes remain disabled.",
+                "The periodic scheduler callback was late or missed. Ongoing IoX "
+                "updates remain blocked until reliable cadence is observed.",
             )
 
     def _event_preview_poll_handler(self) -> bool:
@@ -1056,8 +1071,10 @@ class CalendarController(udi_interface.Node):
                 self._minute_poll_requested = True
                 self._notice(
                     "schedule_poll",
-                    "Minute polling was requested and is awaiting observed cadence. "
-                    "IoX writes remain disabled.",
+                    "CalendarRules is starting. Your schedule can be prepared now; "
+                    "the first safe IoX reconciliation begins after the scheduler's "
+                    "first callback. Refresh Now only updates Google Calendar data. "
+                    "Avoid restarting during startup.",
                 )
             except Exception:
                 self._minute_poll_requested = False

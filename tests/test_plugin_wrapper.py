@@ -1745,9 +1745,17 @@ def test_set_poll_is_only_a_request_until_short_poll_cadence_is_observed(
     assert probe._minute_poll_requested is True
     assert probe.minute_poll_verified is False
     assert probe.iox_writes_allowed is False
+    assert "first safe IoX reconciliation" in poly.Notices["schedule_poll"]
+    assert "Refresh Now only updates Google Calendar data" in poly.Notices[
+        "schedule_poll"
+    ]
 
     assert callbacks["POLL"]("shortPoll") is True
     assert probe.minute_poll_verified is False
+    assert "Initial reconciliation is available" in poly.Notices["schedule_poll"]
+    assert callbacks["POLL"]("shortPoll") is True
+    assert probe.minute_poll_verified is False
+    assert "duplicate scheduler callback" in poly.Notices["schedule_poll"]
     now[0] += 60
     assert callbacks["POLL"]("shortPoll") is True
     assert probe.minute_poll_verified is False
@@ -1762,7 +1770,7 @@ def test_set_poll_is_only_a_request_until_short_poll_cadence_is_observed(
     assert callbacks["POLL"]("shortPoll") is True
     assert probe.minute_poll_verified is False
     assert probe.iox_writes_allowed is False
-    assert "not been observed reliably" in poly.Notices["schedule_poll"]
+    assert "late or missed" in poly.Notices["schedule_poll"]
 
 
 def test_write_gate_opens_only_after_observed_cadence_and_closes_on_stop(controller):
@@ -1770,9 +1778,9 @@ def test_write_gate_opens_only_after_observed_cadence_and_closes_on_stop(control
         enabled = False
 
         def update_runtime(
-            self, *, started, minute_poll_verified, last_short_poll_at
+            self, *, started, poll_requested, minute_poll_verified, last_short_poll_at
         ):
-            self.enabled = started and minute_poll_verified
+            self.enabled = started and poll_requested and minute_poll_verified
 
     now = [1000.0]
     poly = FakePolyglot()
@@ -2016,6 +2024,7 @@ def test_short_poll_refreshes_gate_notice_after_marker_and_cadence_changes(contr
     )
     instance.started = True
     instance.stopped = False
+    instance._minute_poll_requested = True
     instance._update_write_gate()
 
     assert instance._update_iox_probe_status() == "ready"
@@ -2074,8 +2083,10 @@ def test_authorization_loss_and_stop_clear_stale_open_gate_notice(controller):
         def __init__(self):
             self.enabled = True
 
-        def update_runtime(self, *, started, minute_poll_verified, last_short_poll_at):
-            self.enabled = bool(started and minute_poll_verified)
+        def update_runtime(
+            self, *, started, poll_requested, minute_poll_verified, last_short_poll_at
+        ):
+            self.enabled = bool(started and poll_requested and minute_poll_verified)
 
     iox_probe = Probe()
     gate = Gate()
@@ -2095,7 +2106,9 @@ def test_authorization_loss_and_stop_clear_stale_open_gate_notice(controller):
     gate.enabled = False
     assert instance._update_iox_probe_status() == "unauthorized"
     assert instance.poly.Notices["iox_access"] == (
-        "IoX access is not authorized; configured state variables were not read or changed."
+        "IoX access is not authorized; configured state variables were not read or changed. "
+        "Enable Allow API Access in eisy-ui, save, restart CalendarRules, "
+        "then verify this status again."
     )
 
     iox_probe.authorized = True
