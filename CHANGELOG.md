@@ -1,14 +1,14 @@
 # Changelog
 
-## 0.4.12 — Maintenance update candidate (not released)
+## 0.4.12 — Native Beta Store maintenance update (2026-11-15)
 
 - Explain invalid adjusted event intervals when a positive start offset would place the effective start at or after the effective end. A successful Google fetch is reported separately from an untrusted local schedule evaluation.
 - Restore the IoX controller Connected (`ST`) driver during the existing one-time post-registration status snapshot to recover a potentially lost initial report.
 - Preserve fail-closed schedule evaluation, the trusted cache, IoX target validation, and write/readback behavior.
 
-**Status:** Candidate for a versioned eisy-ui Beta Store update. Requires a verified archive, controlled Update Now acceptance on the backed-up Barn eisy, and confirmation of the ST behavior. Existing v0.4.11 packaging is not reused.
+**Status:** Published to the native eisy-ui Beta Store and installed via **Reinstall** over the existing Barn plugin (slot 2), preserving Google authorization, rule configuration and persistent cache. An HTTP 504 appeared during installation, but the plugin subsequently started as `0.4.12`, refreshed Google successfully, achieved a trusted cache, verified type-2 variable writes/readback, and showed the IoX node **Connected**. Tested invalid `+120` start offset: Google refresh succeeded, local evaluation correctly rejected the invalid interval, and no state decisions were produced; restoring `-120` recovered trusted scheduling and a verified desired-ON result. A new eisy-ui system backup succeeded afterward. Issues #4 and #5 closed following live acceptance. This is **Beta acceptance**, not proof of a full ON→OFF lifecycle, restore test, token longevity, or resolution of the HTTP 504 installer warning.
 
-## 0.4.11 — Maintenance candidate (not released)
+## 0.4.11 — Intermediate maintenance build (installed on Barn before 0.4.12)
 
 - Point plugin documentation to the public CalendarRules website.
 - Point the license link to the public MIT license.
@@ -17,7 +17,7 @@
 
 No changes to calendar matching, event offsets, polling, Google OAuth, cache, IoX target validation, write gating, reconciliation, installation dependencies, or the publisher identifier.
 
-**Status:** A pull-request candidate only. Not published to the eisy-ui store, not deployed to any eisy, and not yet verified using **Update Now**.
+**Historical status:** This build was observed running on the Barn before the successful 0.4.12 Beta upgrade. The native **Reinstall** action was used for 0.4.12; no separate **Update Now** control was observed.
 
 ## 0.4.10 — Native Beta baseline
 
