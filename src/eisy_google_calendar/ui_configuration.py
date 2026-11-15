@@ -32,7 +32,9 @@ _TYPED_PARAMETER_SCHEMA = [
     {
         "name": "timezone",
         "title": "Timezone (IANA name)",
-        "desc": "Timezone used for all-day Google Calendar events.",
+        "desc": ("IANA timezone for local activity times, e.g. America/New_York. "
+            "All-day events are ignored."
+        ),
         "type": "STRING",
         "isRequired": True,
         "defaultValue": DEFAULT_TIMEZONE,
@@ -40,7 +42,10 @@ _TYPED_PARAMETER_SCHEMA = [
     {
         "name": "refresh_hours",
         "title": "Google refresh interval in hours (1, 2, or 4)",
-        "desc": "Local schedule evaluation remains once per minute.",
+        "desc": ("Download events from Google every 1, 2, or 4 hours. "
+            "Cached schedule evaluation still runs about once per minute; "
+            "this is separate from eisy-ui Short/Long Poll."
+        ),
         "type": "STRING",
         "isRequired": True,
         "defaultValue": "2",
@@ -49,8 +54,8 @@ _TYPED_PARAMETER_SCHEMA = [
         "name": "show_event_titles",
         "title": "Show event titles in Calendar Activity (true or false)",
         "desc": (
-            "Privacy opt-in. Titles appear only in the authenticated eisy-ui "
-            "Calendar Activity notice; default false."
+            "Set true to show event titles in authenticated Calendar Activity "
+            "notices. False hides titles (default); locations stay hidden."
         ),
         "type": "STRING",
         "isRequired": True,
@@ -59,7 +64,9 @@ _TYPED_PARAMETER_SCHEMA = [
     {
         "name": "upcoming_event_limit",
         "title": "Upcoming events shown (5 or 10)",
-        "desc": "Presentation only; does not change calendar evaluation.",
+        "desc": ("Show up to 5 or 10 upcoming event/rule matches in notices. "
+            "This does not limit events evaluated or change automation."
+        ),
         "type": "STRING",
         "isRequired": True,
         "defaultValue": "5",
@@ -68,14 +75,23 @@ _TYPED_PARAMETER_SCHEMA = [
         "name": "calendars",
         "title": "Google Calendars",
         "desc": (
-            "Calendar IDs used by every enabled rule. OAuth discovery is not "
-            "enabled in this offline milestone."
+            "Add the Google calendars to read. Every enabled rule checks "
+            "every calendar listed below. The authenticated Google account "
+            "must have access to each calendar."
         ),
         "isList": True,
         "params": [
             {
                 "name": "calendar_id",
                 "title": "Google Calendar ID",
+                "desc": (
+                    "Use primary for the authenticated account\u0027s main calendar, "
+                    "or copy the exact Calendar ID from Google Calendar > "
+                    "Settings > select calendar > Integrate calendar. "
+                    "An ID may look like an email address or end in "
+                    "@group.calendar.google.com. Do not enter the calendar "
+                    "display name or a web URL."
+                ),
                 "type": "STRING",
                 "isRequired": True,
             }
@@ -84,19 +100,26 @@ _TYPED_PARAMETER_SCHEMA = [
     {
         "name": "rules",
         "title": "Calendar Rules",
-        "desc": "Add, edit, or delete offline preview rules.",
+        "desc": ("Add rules that match event titles or locations and update "
+            "existing IoX state variables. At least one rule must be "
+            "enabled; enabled rules apply to every listed calendar."
+        ),
         "isList": True,
         "params": [
             {
                 "name": "name",
                 "title": "Friendly rule name",
+                "desc": ("A label for this rule in CalendarRules activity notices, "
+                         "e.g. Workshop Occupied. Enabled rule names must be unique."),
                 "type": "STRING",
                 "isRequired": True,
             },
             {
                 "name": "match_field",
                 "title": "Match field (title or location)",
-                "desc": "Allowed: title, location. Missing legacy values use title.",
+                "desc": ("Enter title to match the event name, or location to "
+                         "match its actual Google Calendar Location field "
+                         "(not the event description)."),
                 "type": "STRING",
                 "isRequired": True,
                 "defaultValue": DEFAULT_MATCH_FIELD,
@@ -104,13 +127,18 @@ _TYPED_PARAMETER_SCHEMA = [
             {
                 "name": "title_contains",
                 "title": "Event match pattern",
+                "desc": ("Text to match in the chosen title or location. "
+                         "Examples: Workshop, Studio A, or Staff:. "
+                         "Match type controls how it is compared."),
                 "type": "STRING",
                 "isRequired": True,
             },
             {
                 "name": "title_match_type",
                 "title": "Match type",
-                "desc": "Allowed: contains, exact, starts_with, ends_with.",
+                "desc": ("Enter contains (anywhere), exact (entire field), "
+                         "starts_with (beginning), or ends_with (end). "
+                         "Use these exact lowercase values."),
                 "type": "STRING",
                 "isRequired": True,
                 "defaultValue": DEFAULT_TITLE_MATCH_TYPE,
@@ -118,6 +146,8 @@ _TYPED_PARAMETER_SCHEMA = [
             {
                 "name": "case_sensitive",
                 "title": "Case-sensitive match (true or false)",
+                "desc": ("False ignores capitalization (Workshop matches workshop). "
+                         "True requires matching capitalization."),
                 "type": "STRING",
                 "isRequired": True,
                 "defaultValue": "false",
@@ -125,13 +155,18 @@ _TYPED_PARAMETER_SCHEMA = [
             {
                 "name": "state_variable_id",
                 "title": "Existing IoX type-2 state-variable ID",
-                "desc": "Positive numeric ID; CalendarRules never creates variables.",
+                "desc": ("Number of an EXISTING IoX type-2 state variable, e.g. 38. "
+                         "Use the numeric ID, not the variable name and not "
+                         "a type-1 integer variable. CalendarRules does not create it."),
                 "type": "STRING",
                 "isRequired": True,
             },
             {
                 "name": "start_offset_minutes",
                 "title": "Start offset in minutes (-1440 to 1440)",
+                "desc": ("Minutes relative to event start: -30 begins demand "
+                         "30 minutes early; 0 begins at start; +30 begins "
+                         "30 minutes late. Range -1440 to +1440."),
                 "type": "STRING",
                 "isRequired": True,
                 "defaultValue": "0",
@@ -139,6 +174,9 @@ _TYPED_PARAMETER_SCHEMA = [
             {
                 "name": "end_offset_minutes",
                 "title": "End offset in minutes (-1440 to 1440)",
+                "desc": ("Minutes relative to event end: +30 extends demand "
+                         "30 minutes; 0 ends at event end; -30 ends "
+                         "30 minutes early. Range -1440 to +1440."),
                 "type": "STRING",
                 "isRequired": True,
                 "defaultValue": "0",
@@ -146,6 +184,9 @@ _TYPED_PARAMETER_SCHEMA = [
             {
                 "name": "enabled",
                 "title": "Rule enabled (true or false)",
+                "desc": ("True includes this rule in scheduling when the "
+                         "other safety/IoX permissions pass. False excludes "
+                         "it and does not force its previous variable OFF."),
                 "type": "STRING",
                 "isRequired": True,
                 "defaultValue": "true",
