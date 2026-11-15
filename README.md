@@ -2,7 +2,7 @@
 
 Google Calendar rule automation for Universal Devices eisy / IoX.
 
-> **Beta software.** CalendarRules v0.4.10 has been tested through the eisy-ui plugin store, but public OAuth verification, update/restore, and a complete device lifecycle test are not yet finished. Do not connect unvalidated beta rules to safety-critical equipment.
+> **Beta software.** CalendarRules v0.4.12 is available through the eisy-ui Beta Plugin Store. A native in-place Reinstall upgrade has been tested on a separate eisy; public OAuth verification, a full restore, and complete device lifecycle testing are not yet finished. Do not connect unvalidated beta rules to safety-critical equipment.
 
 CalendarRules reads selected Google Calendars, matches event **titles or locations**, applies timing offsets, and computes 0/1 values for **existing IoX type-2 state variables**. The ISY owner's programs decide how those variables affect HVAC, lighting, access control, notifications, or other devices.
 
@@ -16,7 +16,11 @@ CalendarRules reads selected Google Calendars, matches event **titles or locatio
 
 ## Current beta acceptance
 
-On November 14, 2026, v0.4.10 was installed through the eisy-ui plugin store on a second eisy with a separate ISY Portal account. OAuth, calendar retrieval, rule evaluation, polling authorization, and a type-2 variable write/readback were observed. The Google account was the **same** in both environments. Different-Google-account authorization, full ON/OFF lifecycle, update/restore, and token longevity remain release tests.
+On November 15, 2026, Beta 0.4.12 was installed on the Barn eisy via the existing plugin's **Reinstall** control, retaining authorization, saved rules, trusted schedule cache and IoX variable targets 32/33. The IoX node reported **Connected**, actual polling opened the write gate, and type-2 write/readback was verified.
+
+An intentionally invalid start offset (`+120` against a shorter event) produced a specific local-interval warning while accurately reporting that Google refresh succeeded. No state decisions were made until the offset was restored to `-120`, after which trusted evaluation and verified reconciliation resumed. The owner confirmed an eisy-ui system backup succeeded after the update. See [changelog](CHANGELOG.md).
+
+**Still pending:** a complete ON→OFF lifecycle acceptance, full restore and failed-update recovery, long-lived OAuth token behavior and public Google OAuth review. The installer displayed an HTTP 504 timeout warning even though the upgrade installed successfully; the warning remains unresolved.
 
 ## License
 
