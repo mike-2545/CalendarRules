@@ -6,6 +6,19 @@ Google Calendar rule automation for Universal Devices eisy / IoX.
 
 CalendarRules reads selected Google Calendars, matches event **titles or locations**, applies timing offsets, and computes 0/1 values for **existing IoX type-2 state variables**. The ISY owner's programs decide how those variables affect HVAC, lighting, access control, notifications, or other devices.
 
+## Documentation and help
+
+| Goal | Guide |
+| --- | --- |
+| Install and test safely | [Getting started](docs/getting-started.md) |
+| Understand configuration and offsets | [Configuration reference](docs/configuration-reference.md) |
+| Diagnose warnings and installation/backup problems | [Troubleshooting](docs/troubleshooting.md) |
+| Build ISY programs from schedule signals | [ISY program examples](docs/isy-program-examples.md) |
+| Privacy and security | [Security](SECURITY.md) · [Privacy](https://calendarrules.org/privacy/) |
+| Report an issue | [GitHub Issues](https://github.com/mike-2545/CalendarRules/issues) |
+
+**Website:** https://calendarrules.org
+
 ## Safety principles
 
 - Google OAuth uses read-only Calendar scopes.

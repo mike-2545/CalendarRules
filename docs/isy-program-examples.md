@@ -1,10 +1,16 @@
-# ISY program examples (planned integration)
+# ISY program examples — calendar demand signals
 
-The plugin is planned to update **existing state variables**. The following are illustrative ISY-style programs, not imported program files. Create the variables and devices on your IoX and adjust program syntax to your actual device tree.
+CalendarRules **only updates existing IoX type-2 state variables**. It does not issue commands to equipment, create variables, or decide what your automations should do.
 
-## 1. Workshop lighting
+These are *illustrative ISY-style examples*, not importable program files. Replace variable names, program paths and device commands with your actual IoX setup. **Test with a variable disconnected from production equipment first.**
 
-Calendar: `Workshop` 10:00 AM–12:00 PM. Rule: keyword `Workshop`, state variable ID `10`, 0-minute offsets.
+## 1. Lighting demand
+
+Google event: `Workshop`, 10:00 AM–noon.
+
+CalendarRules rule: match field `title`, pattern `Workshop`, match type `contains`, offsets `0` and `0`, existing type-2 state-variable ID selected by the owner.
+
+Illustrative ISY program:
 
 ```text
 If
@@ -15,9 +21,15 @@ Else
         Set 'Workshop Lights' Off
 ```
 
-## 2. Precondition HVAC
+This shows how a user **might** react to a variable. It is **not a fail-safe**. If the plugin stops while the variable is ON, the variable might stay ON.
 
-Calendar: `Pottery` 10:00 AM–noon. Rule: start offset `-120` minutes, end offset `0`. This example models the *demand signal*, not specific thermostat commands. Existing IoX programs choose occupied vs setback temperatures.
+## 2. Occupancy request for preconditioning
+
+Google event: `Pottery Class`, 10:00 AM–noon.
+
+Rule: title contains `Pottery Class`; start offset `-120`; end offset `0`.
+
+Effective desired-ON interval: 8:00 AM–noon.
 
 ```text
 If
@@ -28,41 +40,54 @@ Else
         Run Program 'Pottery Setback HVAC' (Then Path)
 ```
 
-## 3. Placeholder / shared facility scheduling
+The user-defined ISY programs determine occupancy and equipment actions, including independent limits and overrides.
 
-One calendar can carry placeholder titles (`Conference Room`, `Book Center`, `Pottery`) matched by separate rules, or multiple calendars can map to one shared variable. A placeholder can represent occupancy without a formal class booking.
+## 3. Location-based scheduling
 
-```text
-Calendar event title: Conference Room
-Event time: 2:00 PM–3:30 PM
-Rule: keyword Conference Room; target state variable 5; start offset -120
-Expected: variable 5 = 1 from noon to 3:30 PM
-```
+Google event:
 
-**Overlap policy**: if two matching events require the same variable at 3:30 PM, it stays at `1`; it drops to `0` only when the last adjusted event ends.
+- Title: `Beginner Painting`
+- Actual Google **Location** field: `Studio A`
+- Time: 2:00 PM–4:00 PM
 
-## 4. Notification on an occupancy transition
+Rule: match field `location`, match type `exact`, pattern `Studio A`, start offset `-30`, end offset `15`.
+
+Desired demand interval: 1:30 PM–4:15 PM.
+
+The Location field must be populated on the Google Calendar event. A room name appearing only in the description is not a location match.
+
+## 4. Multiple events sharing one variable
+
+Event 1: `Studio A` from 10:00 AM to noon.
+
+Event 2: `Studio A` from 11:30 AM to 1:00 PM.
+
+Both match the same enabled rule and target. With zero offsets, the desired value stays `1` from 10:00 AM until **1:00 PM**. CalendarRules should not send an unnecessary OFF at noon while the second event still requires ON.
+
+Every enabled rule currently applies to **every configured calendar**. That is not per-rule calendar targeting.
+
+## 5. Notifications
+
+Users can write ordinary ISY programs that react to a state variable and send a message through their preferred supported notification mechanism:
 
 ```text
 If
         $sWorkshop_Occupied is 1
 Then
-        [Choose an existing Notification plugin message action]
+        [Your configured notification action]
 Else
-        [Optional end-of-event message]
+        [Optional end-of-demand notification]
 ```
 
-The exact Notification action depends on the installed plugin version and service configuration.
+The exact action depends on the installed notification integration and the user's ISY program design.
 
-## 5. What placeholders do *not* do
+## Operational safety and failure behavior
 
-A placeholder does not directly unlock a door, control HVAC, or command a device. It requests occupancy through a state variable. Normal ISY programs, including any safety interlocks, remain responsible for actions.
+- All-day and cancelled Google events are ignored.
+- Recurring event occurrences, edits, and overlapping windows are evaluated according to the trusted schedule.
+- Offsets can move the effective demand window to a different calendar day.
+- A missing, untrusted, or stale Google schedule is **not** treated as an empty calendar; it does not authorize a guessed OFF value.
+- If CalendarRules stops, OAuth access is revoked, the eisy is offline, or licensing expires, **a previously ON state variable can remain ON**. Use an independently designed ISY watchdog, equipment interlock, or other safe fallback appropriate to the application.
+- Do not operate life-safety equipment based on this Beta plugin.
 
-## Timing and resilience notes
-
-- All-day and cancelled entries are ignored by default.
-- Recurring occurrences should be evaluated individually, respecting exceptions.
-- Offsets can shift the effective window to the previous or following day.
-- Calendar API errors must not be interpreted as zero matching events.
-- After restart or an edited/deleted event, recompute desired state and correct it instead of depending on missed trigger windows.
-- Some programs may need a one-time synchronization strategy after startup; confirm behavior through testing.
+For setup, see [Getting started](getting-started.md), [Configuration reference](configuration-reference.md), and [Troubleshooting](troubleshooting.md).
