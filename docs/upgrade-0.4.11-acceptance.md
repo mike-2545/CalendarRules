@@ -1,5 +1,8 @@
 # Controlled native Beta upgrade acceptance: 0.4.10 → 0.4.11
 
+> **Historical planning document (superseded November 15, 2026).** CalendarRules 0.4.12 was successfully upgraded on the Barn using **Reinstall** on the existing plugin Overview, not Update Now. The updated Barn retained OAuth/rules/cache, passed live scheduling and invalid-offset tests, and successfully completed a system backup. The installer returned HTTP 504 despite subsequently completing. This document preserves the earlier proposed test plan; see [CHANGELOG](../CHANGELOG.md) for actual acceptance and remaining gaps.
+
+
 **Planning only. No installation or plugin-store changes authorized by this document.**
 
 ## Scope
