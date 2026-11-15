@@ -76,40 +76,6 @@ def configuration(*calendars):
 
 
 
-def test_invalid_interval_is_local_evaluation_failure_not_google_fetch_failure():
-    configured = load_typed_configuration({
-        "timezone": "America/New_York",
-        "refresh_hours": "2",
-        "calendars": [{"calendar_id": "secret-calendar"}],
-        "rules": [{
-            "name": "Workshop",
-            "title_contains": "Workshop",
-            "state_variable_id": "38",
-            "case_sensitive": "false",
-            "start_offset_minutes": "120",
-            "end_offset_minutes": "0",
-            "enabled": "true",
-        }],
-    })
-    written = []
-    probe = ReadOnlyOAuthEventPreview(
-        FakeSdkOAuth(),
-        safe_logging=lambda: True,
-        clock=lambda: NOW,
-        fetch_events_factory=fake_factory(
-            [{"items": [timed("PRIVATE_EVENT", "Workshop PRIVATE_TITLE")]}], [],
-        ),
-        trusted_state_consumer=lambda state: written.append(state),
-    )
-    configure_auth(probe)
-    result = probe.schedule_tick(configured)
-    assert result.status == "invalid_interval"
-    assert result.refresh_succeeded is True
-    assert result.evaluated is True
-    assert written == []
-    assert "PRIVATE" not in repr(result)
-
-
 def variable_38_configuration():
     return load_typed_configuration({
         "timezone": "America/New_York",
@@ -863,3 +829,37 @@ def test_source_contains_no_iox_device_mutations():
     source = file.read_text()
     for forbidden in ("write_state_variable(", "reconcile_snapshot(", "ISY(", "setDriver(", "requests.post("):
         assert forbidden not in source
+
+
+def test_invalid_interval_is_local_evaluation_failure_not_google_fetch_failure():
+    configured = load_typed_configuration({
+        "timezone": "America/New_York",
+        "refresh_hours": "2",
+        "calendars": [{"calendar_id": "secret-calendar"}],
+        "rules": [{
+            "name": "Workshop",
+            "title_contains": "Workshop",
+            "state_variable_id": "38",
+            "case_sensitive": "false",
+            "start_offset_minutes": "120",
+            "end_offset_minutes": "0",
+            "enabled": "true",
+        }],
+    })
+    written = []
+    probe = ReadOnlyOAuthEventPreview(
+        FakeSdkOAuth(),
+        safe_logging=lambda: True,
+        clock=lambda: NOW,
+        fetch_events_factory=fake_factory(
+            [{"items": [timed("PRIVATE_EVENT", "Workshop PRIVATE_TITLE")]}], [],
+        ),
+        trusted_state_consumer=lambda state: written.append(state),
+    )
+    configure_auth(probe)
+    result = probe.schedule_tick(configured)
+    assert result.status == "invalid_interval"
+    assert result.refresh_succeeded is True
+    assert result.evaluated is True
+    assert written == []
+    assert "PRIVATE" not in repr(result)
