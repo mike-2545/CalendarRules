@@ -1,4 +1,4 @@
-"""Contract tests for the maintenance-only 0.4.12 release candidate."""
+"""Contract tests for the maintenance-only 0.4.13 release candidate."""
 
 import json
 from pathlib import Path
@@ -11,8 +11,8 @@ PLUGIN = ROOT / "plugin"
 def test_maintenance_release_has_matching_versions_and_public_links():
     metadata = json.loads((PLUGIN / "eisy_google_calendar.iox_plugin.json").read_text(encoding="utf-8"))["plugin"]
     launcher = (PLUGIN / "main.py").read_text(encoding="utf-8")
-    assert metadata["version"] == "0.4.12"
-    assert 'polyglot.start({"version": "0.4.12", "requestId": False})' in launcher
+    assert metadata["version"] == "0.4.13"
+    assert 'polyglot.start({"version": "0.4.13", "requestId": False})' in launcher
     assert metadata["documentationLink"] == "https://calendarrules.org/"
     assert metadata["licenseLink"] == "https://github.com/mike-2545/CalendarRules/blob/main/LICENSE"
 

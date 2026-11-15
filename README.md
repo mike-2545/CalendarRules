@@ -2,7 +2,7 @@
 
 Google Calendar rule automation for Universal Devices eisy / IoX.
 
-> **Beta software.** CalendarRules v0.4.12 is available through the eisy-ui Beta Plugin Store. A native in-place Reinstall upgrade has been tested on a separate eisy; public OAuth verification, a full restore, and complete device lifecycle testing are not yet finished. Do not connect unvalidated beta rules to safety-critical equipment.
+> **Beta software.** CalendarRules v0.4.12 is the last live-accepted Beta Store version. Version 0.4.13 is a configuration-help update candidate, not yet installed or published. A native in-place Reinstall upgrade has been tested on a separate eisy; public OAuth verification, a full restore, and complete device lifecycle testing are not yet finished. Do not connect unvalidated beta rules to safety-critical equipment.
 
 CalendarRules reads selected Google Calendars, matches event **titles or locations**, applies timing offsets, and computes 0/1 values for **existing IoX type-2 state variables**. The ISY owner's programs decide how those variables affect HVAC, lighting, access control, notifications, or other devices.
 
