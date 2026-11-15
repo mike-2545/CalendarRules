@@ -54,6 +54,8 @@ def runtime(
     *,
     started=True,
     cadence=True,
+    poll_requested=True,
+    poll_observed=None,
     logging=True,
     value=0,
     fail_set=False,
@@ -76,8 +78,11 @@ def runtime(
     )
     gate.update_runtime(
         started=started,
+        poll_requested=poll_requested,
         minute_poll_verified=cadence,
-        last_short_poll_at=now[0] if cadence else None,
+        last_short_poll_at=(
+            now[0] if (cadence or poll_observed is True) else None
+        ),
     )
     writer = TrustedStateWriter(
         transport, gate, safe_logging=lambda: logging
@@ -89,6 +94,7 @@ def test_default_closed_gates_issue_no_iox_commands():
     for kwargs in (
         {"started": False},
         {"cadence": False},
+        {"poll_requested": False},
         {"logging": False},
         {"marker": False},
         {"transport_ready": False},
@@ -96,6 +102,87 @@ def test_default_closed_gates_issue_no_iox_commands():
         transport, _gate, writer, *_ = runtime(**kwargs)
         assert writer({38: 1}).status == "blocked"
         assert transport.calls == []
+
+
+def test_first_observed_poll_allows_exactly_one_startup_reconciliation():
+    transport, gate, writer, *_ = runtime(
+        cadence=False,
+        poll_observed=True,
+    )
+
+    assert gate.enabled is False
+    assert writer({38: 1}).status == "written"
+    assert gate.startup_reconciliation_consumed is True
+    assert writer({38: 0}).status == "blocked"
+    assert transport.values[38] == 1
+    assert [path for kind, path in transport.calls if kind == "set"] == [
+        "/rest/vars/set/2/38/1"
+    ]
+
+
+def test_no_poll_failed_poll_request_and_stale_poll_never_get_startup_permit():
+    for kwargs in (
+        {"cadence": False, "poll_observed": False},
+        {"cadence": False, "poll_observed": True, "poll_requested": False},
+    ):
+        transport, _gate, writer, *_ = runtime(**kwargs)
+        assert writer({38: 1}).status == "blocked"
+        assert transport.calls == []
+
+    transport, _gate, writer, now, *_ = runtime(
+        cadence=False,
+        poll_observed=True,
+    )
+    now[0] += 91
+    assert writer({38: 1}).status == "blocked"
+    assert transport.calls == []
+
+
+def test_restart_resets_one_shot_permit_and_recovers_previously_on_target():
+    transport, gate, writer, now, *_ = runtime(
+        cadence=False,
+        poll_observed=True,
+        value=0,
+    )
+    assert writer({38: 1}).status == "written"
+    assert writer({38: 0}).status == "blocked"
+
+    gate.update_runtime(
+        started=False,
+        poll_requested=False,
+        minute_poll_verified=False,
+        last_short_poll_at=None,
+    )
+    now[0] += 10
+    gate.update_runtime(
+        started=True,
+        poll_requested=True,
+        minute_poll_verified=False,
+        last_short_poll_at=now[0],
+    )
+
+    assert writer({38: 0}).status == "written"
+    assert transport.values[38] == 0
+
+
+def test_duplicate_startup_attempt_is_blocked_until_full_cadence_is_verified():
+    transport, gate, writer, now, *_ = runtime(
+        cadence=False,
+        poll_observed=True,
+        value=0,
+    )
+    assert writer({38: 1}).status == "written"
+    assert writer({38: 0}).status == "blocked"
+
+    now[0] += 60
+    gate.update_runtime(
+        started=True,
+        poll_requested=True,
+        minute_poll_verified=True,
+        last_short_poll_at=now[0],
+    )
+    assert writer({38: 0}).status == "written"
+    assert transport.values[38] == 0
 
 
 def test_one_configured_type2_variable_can_be_written_and_read_back():
@@ -233,6 +320,7 @@ def test_gate_is_rechecked_between_read_and_set_during_stop():
     transport, gate, writer, now, *_ = runtime()
     transport.after_get = lambda: gate.update_runtime(
         started=False,
+        poll_requested=False,
         minute_poll_verified=False,
         last_short_poll_at=now[0],
     )

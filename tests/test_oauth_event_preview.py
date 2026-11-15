@@ -513,6 +513,7 @@ def test_real_reconciler_drives_configured_variable_on_and_off_from_cache_during
     )
     gate.update_runtime(
         started=True,
+        poll_requested=True,
         minute_poll_verified=True,
         last_short_poll_at=monotonic_now[0],
     )
@@ -542,6 +543,7 @@ def test_real_reconciler_drives_configured_variable_on_and_off_from_cache_during
     monotonic_now[0] += 60
     gate.update_runtime(
         started=True,
+        poll_requested=True,
         minute_poll_verified=True,
         last_short_poll_at=monotonic_now[0],
     )
@@ -552,6 +554,7 @@ def test_real_reconciler_drives_configured_variable_on_and_off_from_cache_during
     monotonic_now[0] += 60
     gate.update_runtime(
         started=True,
+        poll_requested=True,
         minute_poll_verified=True,
         last_short_poll_at=monotonic_now[0],
     )

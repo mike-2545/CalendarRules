@@ -72,7 +72,7 @@ Every enabled rule is currently evaluated against **every configured calendar**.
 | **Write and readback verified** | A change was sent and confirmed through IoX |
 | **State verified without a change** | IoX already held the required state; no redundant write was needed |
 
-The **Allow API Access** switch belongs to eisy-ui and controls the platform's grant. It is distinct from enabling a CalendarRules rule. A grant alone does not guarantee a write. Stable minute polling must also be observed. If eisy-ui's **Allow API Access** toggle changes during an active session, a plugin restart was needed in our observed test; whether the platform should push a new authorization event automatically remains a UD support question.
+The **Allow API Access** switch belongs to eisy-ui and controls the platform's grant. It is distinct from enabling a CalendarRules rule. A grant alone does not guarantee a write. One guarded startup reconciliation may occur only after a real short-poll callback; stable minute polling must be observed before ongoing writes are enabled. If eisy-ui's **Allow API Access** toggle changes during an active session, the observed procedure is **Save → restart CalendarRules once → verify authorization and target readback**. Whether the platform should push a new authorization event automatically remains a UD support question.
 
 ## Refresh and status
 
