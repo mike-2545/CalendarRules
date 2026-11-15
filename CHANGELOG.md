@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.14 — Guarded startup reconciliation (Beta candidate; not yet published)
+
+- Permit one fully guarded startup reconciliation after the first genuine short-poll callback, instead of waiting for three callbacks before any state-variable update.
+- Retain verified, fresh polling for ongoing reconciliation and fail closed if callbacks are missing, late, or duplicated.
+- Recheck safe logging, valid trusted schedule, owner IoX authorization, exact configured target IDs, validated type-2 variables, and write/readback safety before operations.
+- Improve startup, scheduler and Allow API Access notices so users know what is happening and what actions help.
+- Add regressions for no-poll, failed-poll, missed/duplicate poll, restart, and ON/OFF recovery scenarios.
+
+**Status:** PR #14 merged with the full regression and security workflows passing. This is a versioned Beta **candidate** for controlled Barn testing; it has not been uploaded to the UD Store or installed. The last live-accepted version is 0.4.13.
+
 ## 0.4.13 — Native Beta configuration help update (2026-11-15)
 
 - Add practical help tooltips for every eisy-ui CalendarRules field, including Google Calendar ID, event matching, start/end offsets, rule enablement, existing type-2 state variable ID and privacy controls.
