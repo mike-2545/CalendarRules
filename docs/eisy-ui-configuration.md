@@ -22,7 +22,7 @@ A Connected controller `ST` indicates communication with Polyglot, not Google au
 
 `Configuration → Refresh` reloads the form. A Google Calendar node's `Refresh Now` command requests a Google refresh through the bounded worker. Sanitized eisy-ui notices show schedule trust and activity. See [Troubleshooting](troubleshooting.md).
 
-The native cache is in `persist/calendarrules`. Its intentionally strict privacy permissions previously exposed an **eisy-ui backup HTTP 500 / EACCES compatibility issue**. Backup succeeded on the Barn after updating the platform to eisy-ui 1.4.11, IoX 6.1.2_16, and UDX 5.3.0_4 without changing CalendarRules' private file permissions. The specific package responsible is unconfirmed. Continue verifying backups before upgrades.
+The native cache is in `persist/calendarrules`. Its intentionally strict privacy permissions previously exposed an **eisy-ui backup HTTP 500 / EACCES compatibility issue**. Backup completed on the Barn after updating the platform to eisy-ui 1.4.11, IoX 6.1.2_16, and UDX 5.3.0_4 without changing CalendarRules' private file permissions. UD subsequently clarified that newer backups **skip inaccessible files and report omissions**; completion does not prove that CalendarRules' cache was archived. UD recommends **group read/write access**, with **0770** as guidance. Cache directory ownership, group/ACL inheritance and file modes must be evaluated before migrating the current 0700/0600 policy. The pending implementation and acceptance plan is [Issue #17](https://github.com/mike-2545/CalendarRules/issues/17).
 
 ## Developer reference
 
