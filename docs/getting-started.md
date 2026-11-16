@@ -2,7 +2,7 @@
 
 CalendarRules connects **Google Calendar events to existing IoX type-2 state variables**. It does not create state variables, control equipment, or edit Google Calendar events. Your own ISY programs decide what a variable means.
 
-> **Beta v0.4.13.** The Barn test eisy has been upgraded using the existing plugin's **Reinstall** action and the configuration help icons have been verified. Test with a dedicated, unused state variable; do not begin with life-safety or production equipment. A full backup succeeded on Barn running eisy-ui 1.4.11; full restore, complete ON/OFF lifecycle and long-term OAuth token tests are still pending.
+> **Beta v0.4.13.** The Barn test eisy has been upgraded using the existing plugin's **Reinstall** action and the configuration help icons have been verified. Test with a dedicated, unused state variable; do not begin with life-safety or production equipment. A Barn backup completed on eisy-ui 1.4.11, but UD subsequently clarified that newer releases may **skip unreadable plugin files**; complete cache inclusion is not yet independently verified. Full restore, complete ON/OFF lifecycle and long-term OAuth token tests are still pending.
 
 ## Before you begin
 
@@ -81,7 +81,7 @@ In **Overview**, look for these independent conditions:
 
 IoX writes require the separate owner-granted **Allow API Access** permission in eisy-ui, verified variable checks, trusted data, safe logging, and observed minute polling. At startup, CalendarRules requests minute polling but does not treat that request as proof that scheduling works. After the first real short-poll callback it may perform one fully guarded initial reconciliation; ongoing updates remain blocked until reliable cadence is observed. If no callback arrives or the polling request fails, no startup reconciliation occurs. **Refresh Now only retrieves Google Calendar data and does not advance scheduler verification. Avoid restarting while startup verification is in progress.**
 
-Enabling API access does **not** necessarily open the write gate immediately. In our observed tests, the reliable procedure was: enable **Allow API Access**, save, restart CalendarRules once, and verify the authorization and readable type-2 target notices. Whether eisy-ui should push authorization changes to a running plugin automatically is still being clarified with UD.
+Enabling API access does **not** necessarily open the write gate immediately. In our observed tests, the reliable procedure was: enable **Allow API Access**, save, restart CalendarRules once, and verify the authorization and readable type-2 target notices. UD has confirmed a plugin **restart is required** after enabling API access.
 
 Once the write gate opens, observe the test variable change to `1` during the matching event and return to `0` after the final matching event ends. Check the **write/readback verified** or **state verified without a change** notice. Do not use this test as permission to connect production equipment automatically.
 
@@ -96,7 +96,7 @@ See [ISY program examples](isy-program-examples.md) and the [field reference](co
 ## 7. Verify persistence and backups
 
 - Save your configuration, refresh the browser, and confirm it persists. Recheck after a deliberate plugin restart only when safe.
-- Confirm that an eisy-ui backup **actually succeeds** before upgrading. The Barn eisy initially failed with HTTP 500 / `EACCES` while backing up the private cache, but backups succeeded—including persistent CalendarRules data—after upgrading to eisy-ui 1.4.11 / IoX 6.1.2_16 / UDX 5.3.0_4, without loosening cache permissions. This is a verified outcome on that test installation, not a universal minimum-version guarantee. See [Troubleshooting](troubleshooting.md).
+- Before upgrading, create an eisy-ui backup **and inspect any skipped-file list**. UD confirmed newer eisy-ui may complete while skipping unreadable plugin files. The Barn previously encountered HTTP 500 / `EACCES` at the private cache directory, and subsequently completed a backup after upgrading to eisy-ui 1.4.11 / IoX 6.1.2_16 / UDX 5.3.0_4. We have **not yet confirmed archive inclusion of all private cache files**. See [Troubleshooting](troubleshooting.md) and [Issue #17](https://github.com/mike-2545/CalendarRules/issues/17).
 - On our tested eisy-ui installation, the existing plugin's **Reinstall** action fetched the newer Beta version in the same slot, preserving Google authorization, rules, and cache. Verify you have a successful backup first. Do **not** delete the plugin or use the separate publisher **Install** button to attempt an in-place update.
 
 ## Help and privacy
