@@ -30,9 +30,9 @@ This guide is for the **native eisy-ui plugin**. Start with the plugin's **Overv
 | **State verified without a change** | IoX already had the desired 0/1 value | Normal idempotent behavior, not a missed command |
 | **Upcoming event missing** | Wrong Calendar ID, title/location field, rule match, event timing, cancellation, or all-day event | Check the event's actual Google **Location** field and the rule; verify Google sync time and timezone |
 | **HTTP 504 during install** | A gateway request timed out, possibly before reporting completed installation | Check **Local Plugins** and installed status before trying anything else; avoid repeated Install/Reinstall clicks. An earlier upgrade showed 504 but installed correctly; the owner's latest 0.4.13 upgrade did not show 504 |
-| **HTTP 500 when creating an eisy-ui backup** | Backup service could not read a plugin persist directory in an earlier platform installation | Confirm installed eisy-ui/IoX/UDX versions, preserve the error log, and seek UD guidance before upgrading. The Barn backup succeeded after a platform update without plugin permission changes; do not loosen private cache permissions |
+| **HTTP 500 when creating an eisy-ui backup** | Backup service could not read a plugin persist directory in an earlier platform installation | Confirm installed eisy-ui/IoX/UDX versions, preserve the error log, and seek UD guidance before upgrading. The newer eisy-ui may skip unreadable files while completing a backup; inspect the skipped-file report and verify the private cache is actually included. Follow UD's group-access guidance only after checking group ownership and ACLs |
 
-### Historical backup-permissions issue — resolved on the updated Barn
+### Backup permissions — eisy-ui group access and skipped-file reporting
 
 On an isolated native installation, the eisy-ui backup operation has failed with:
 
@@ -41,13 +41,13 @@ EACCES: permission denied, scandir
 '/var/eisyui/ns/plugin_2/persist/calendarrules'
 ```
 
-The plugin creates its local calendar schedule cache under `persist/calendarrules` using owner-only directory/file permissions (`0700` / `0600`). On November 15, 2026, the Barn eisy running eisy-ui **1.4.11**, IoX **6.1.2_16**, and UDX **5.3.0_4** successfully created a system backup that included the plugin's persistent data. Those plugin permissions were **not changed**. The upgrade and reboot changed multiple platform components, so the exact cause of the earlier failure is not established.
+The plugin creates its local calendar schedule cache under `persist/calendarrules` using owner-only directory/file permissions (`0700` / `0600`). On November 15, 2026, the Barn eisy running eisy-ui **1.4.11**, IoX **6.1.2_16**, and UDX **5.3.0_4** completed a backup after a platform upgrade without changes to the cache permissions. On November 16, UD clarified that newer eisy-ui can **skip files it cannot read and list those skipped paths**. Therefore, backup completion alone does **not** prove that CalendarRules' private cache was included; the archive manifest and skipped-file report still require verification.
 
-**Do not run `chmod -R 777`, make the directory world-readable, or remove saved data.** Confirm a successful backup on your own eisy before updating; if the failure recurs, retain a sanitized log and seek UD support. The observed failure did not establish a Google OAuth or IoX scheduling defect.
+**UD's guidance:** Files to be backed up require group read/write access; Benoit recommended mode **`0770`**. For a directory, group execute allows traversal; for a normal JSON cache file, **`0660`** may be sufficient, subject to confirming the exact UD backup contract. The owning group and inherited FreeBSD ACLs matter, especially when CalendarRules atomically replaces a cache file. See [Issue #17](https://github.com/mike-2545/CalendarRules/issues/17).\n\n**Do not run `chmod -R 777`, make the directory world-readable, or remove saved data.** Before updates, inspect backup skip warnings and check that the relevant private cache files are in the archive. Until the group-private migration is reviewed and released, do not assume a successful backup contains every plugin file.
 
 ### Allow API Access changed while running
 
-In our observed tests, restarting the plugin after granting **Allow API Access** made the IoX authorization available to CalendarRules. We have asked UD whether the platform should deliver a new ISY authorization event automatically or whether a running plugin must request the updated information. A restart is an observed workaround, **not** a confirmed platform requirement. Verify trusted schedule and target readback afterward.
+**UD confirmed:** Changing **Allow API Access** requires restarting the plugin. After enabling the setting and saving, restart CalendarRules and verify the authorized/readable target notice, trusted schedule, and write readiness. No automatic updated ISY authorization event should be assumed. Verify trusted schedule and target readback afterward.
 
 ### Plugin stopping while a variable is ON
 
