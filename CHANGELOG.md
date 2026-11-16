@@ -1,5 +1,14 @@
 # Changelog
 
+## Pending — eisy-ui backup permission compatibility (not released)
+
+- UD clarified that backup-eligible plugin files must have group read/write permission (recommended 0770) and that newer eisy-ui backups may skip unreadable files while reporting omissions.
+- CalendarRules currently creates a 0700 directory and 0600 JSON cache files; group ownership, inherited ACLs and atomic replacement need a reviewed migration.
+- An earlier Barn backup completed after a platform update, but archive inclusion and skipped-file status are not independently established. Track the fix and tests in [Issue #17](https://github.com/mike-2545/CalendarRules/issues/17).
+- UD confirmed that enabling Allow API Access requires restarting the plugin; Reinstall installs the latest available release, while newer eisy-ui also offers an Update indicator/button.
+
+**Status:** Documentation and investigation only; no runtime permissions or Store package changed.
+
 ## 0.4.14 — Guarded startup reconciliation (native Beta, 2026-11-15)
 
 - Permit one fully guarded startup reconciliation after the first genuine short-poll callback, instead of waiting for three callbacks before any state-variable update.
